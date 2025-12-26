@@ -19,11 +19,15 @@ LEARNING: Feedback loops improve future generations
 
 ---
 
-TOOL CATEGORIES (26 total)
+TOOL CATEGORIES (30 total)
 
-CORE_NEUROGENESIS (7): create_synapse, fire_neurotransmitter, create_workflow, get_synaptic_network, discover_emergent_capabilities, get_possible_pathways, visualize_pathway
+CORE_NEUROGENESIS (11): create_synapse, fire_neurotransmitter, create_workflow, get_synaptic_network, discover_emergent_capabilities, get_possible_pathways, visualize_pathway, get_pending_builds, get_build_plan, approve_build, reject_build
 
-NOTE: Build approval tools (get_pending_builds, get_build_plan, approve_build, reject_build) are documented in barespec but integrated into core workflow - not separate MCP tools
+BUILD_APPROVAL (subset of CORE_NEUROGENESIS):
+- get_pending_builds: List all builds awaiting human approval
+- get_build_plan: Get detailed build plan for a pending build
+- approve_build: Approve pending build to continue generation
+- reject_build: Reject a pending build with reason
 
 META_MEMORY (5):
 - log_generation_error: Record errors during generation
@@ -91,7 +95,7 @@ KEY FILES
 SOURCE: /repo/neurogenesis-engine/
 INDEX: src/index.js
 TOOLS: src/tools/index.js
-NEUROGENESIS: src/tools/neurogenesis.js (11 tools: core + approval)
+NEUROGENESIS: src/tools/neurogenesis.js (11 tools: 7 core + 4 approval)
 META-MEMORY: src/tools/meta-memory.js
 QUALITY: src/tools/quality.js
 DIAGNOSTIC: src/tools/diagnostic.js
