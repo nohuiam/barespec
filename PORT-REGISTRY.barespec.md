@@ -39,6 +39,7 @@ PATTERN: Server N uses 300N, 800N, 900N
 | pk-manager | 3018 | 8018 | 9018 | Production | - |
 | research-bus | - | 8019 | - | HTTP-only | Perplexity API |
 | intelligent-router | 3020 | 8020 | 9020 | Production | Claude API |
+| verifier-mcp | 3021 | 8021 | 9021 | Production | Anthropic API, HuggingFace |
 | filesystem | - | - | - | 3rd party | 3rd party npm |
 
 ---
@@ -164,6 +165,13 @@ HTTP: 8020 - Routing history API
 WS: 9020 - Routing progress events
 DEPS: Claude API
 
+### verifier-mcp (3021/8021/9021)
+SOURCE: /repo/verifier-mcp/config/interlock.json
+UDP: 3021 - InterLock mesh
+HTTP: 8021 - Claims extraction/verification API
+WS: 9021 - Verification progress events
+DEPS: Anthropic API, HuggingFace (MiniCheck)
+
 ### filesystem (stdio only)
 SOURCE: npm @modelcontextprotocol/server-filesystem
 UDP: None
@@ -203,6 +211,7 @@ ACTIVE MESH PARTICIPANTS:
 - knowledge-curator (3017)
 - pk-manager (3018)
 - intelligent-router (3020)
+- verifier-mcp (3021)
 
 HTTP-ONLY SERVERS:
 - looker (8006)
