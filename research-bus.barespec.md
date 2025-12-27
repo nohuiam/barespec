@@ -1,6 +1,6 @@
 SERVER: research-bus
 VERSION: 1.0
-UPDATED: 2025-12-26
+UPDATED: 2025-12-27
 STATUS: Production
 PORT: 8019 (HTTP only)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -188,4 +188,4 @@ COMPARISON TO NIWS-SERVER
 | Tools | 12 | 100+ |
 | Scope | Query → Response | RSS → Video delivery |
 | Status | Production | Production |
-| Port | 3019/8019 | 3015/8015/9015 |
+| Port | 8019 (HTTP only) | 3015/8015/9015 |
