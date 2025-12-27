@@ -1,9 +1,8 @@
-# BARESPEC TEMPLATE v1.1
+# BARESPEC TEMPLATE v1.0
 
 **Created:** 2025-12-26
-**Updated:** 2025-12-27
 **Purpose:** Standard template for all BOP/Imminence OS server documentation
-**Format:** Consolidated single-file per server (no separate -tools files)
+**Based on:** context-guardian.barespec.md (validated 100% accurate)
 
 ---
 
@@ -59,7 +58,7 @@ INPUT: { param: type (required|optional), ... }
 OUTPUT: { field: type, ... }
 USE: {one-line description of when to use}
 EXAMPLE: {tool_name}({ example_params })
-NOTES: {usage tips, caveats, best practices - optional}
+NOTES: {optional - additional usage details, warnings, tips}
 
 {Repeat for each tool}
 
@@ -135,29 +134,139 @@ DEPENDENCIES: {npm packages, comma-separated}
 
 ---
 
-## REFERENCE SECTIONS (Optional)
+## OPTIONAL SECTIONS
 
-Add unique sections after TOOLS when relevant:
+Include these sections when applicable to the server:
+
+### DATABASE SCHEMA (when server has significant database)
 
 ```
 ---
 
-DOMAINS (if applicable)
-- {domain_name}: {description}
+DATABASE SCHEMA
 
-STRICTNESS LEVELS (if applicable)
-- {level}: {description}
+TABLE: {table_name}
+COLUMNS: {col1}, {col2}, {col3}, ...
+INDEXES: {idx1}, {idx2}, ...
 
-TELEMETRY FIELDS (if applicable)
-- {field}: {type} - {description}
-
-DATABASE SCHEMA (if complex)
-{schema details}
-
-WORKFLOW (if multi-phase)
-{phase descriptions}
+{Repeat for each table}
 
 ---
+```
+
+### HTTP REST API (when server exposes HTTP endpoints)
+
+```
+---
+
+HTTP REST API
+
+GET  /endpoint           → { response_fields }
+POST /endpoint           → { response_fields }
+PUT  /endpoint/:id       → { response_fields }
+
+---
+```
+
+### WEBSOCKET EVENTS (when server has WebSocket)
+
+```
+---
+
+WEBSOCKET EVENTS
+
+S→C {event_name}         → {description}
+C→S {event_name}         → {description}
+C↔S ping/pong            → Keepalive
+
+---
+```
+
+### INTERLOCK SIGNALS (when server is in UDP mesh)
+
+```
+---
+
+INTERLOCK SIGNALS
+
+Emits: {SIGNAL_NAME} (0x{code})
+Accepts: {SIGNAL1}, {SIGNAL2}, ...
+
+---
+```
+
+### KEY CONCEPTS (when server has domain-specific terminology)
+
+```
+---
+
+KEY CONCEPTS
+
+{TERM}: {definition}
+{TERM}: {definition}
+
+---
+```
+
+### INTEGRATIONS (when server depends on external services)
+
+```
+---
+
+INTEGRATIONS
+
+{SERVICE}: {how it's used}
+{SERVICE}: {how it's used}
+
+---
+```
+
+---
+
+## TOOLS BARESPEC TEMPLATE
+
+For `{server}-tools.barespec.md` files:
+
+```
+SERVER: {server-name}
+VERSION: {semver}
+UPDATED: {YYYY-MM-DD}
+TOOLS: {count}
+
+---
+
+## {CATEGORY NAME} ({count})
+
+### {tool_name}
+
+**Purpose:** {description}
+
+**Input Schema:**
+```json
+{
+  "param1": "type (required)",
+  "param2": "type (optional)"
+}
+```
+
+**Output Schema:**
+```json
+{
+  "field1": "type",
+  "field2": "type"
+}
+```
+
+**Example:**
+```json
+{tool_name}({
+  "param1": "value"
+})
+```
+
+---
+
+{Repeat for each tool, grouped by category}
 ```
 
 ---
@@ -209,7 +318,6 @@ INPUT: { name: string (required) }
 OUTPUT: { greeting: string }
 USE: Say hello to someone
 EXAMPLE: example_hello({ name: "World" })
-NOTES: Returns localized greeting based on system locale.
 
 ---
 

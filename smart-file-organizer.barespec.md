@@ -16,7 +16,6 @@ CLASSIFICATION: Heuristic (fast, local) or CataSORTER integration
 SAFETY: Dry run option, full rollback support, operation tracking
 INTERLOCK: UDP mesh (graceful degradation - server continues if InterLock fails), SharedMemoryVault (Redis), Tumbler signal filtering
 DATABASE: SQLite (better-sqlite3), __dirname-based paths for Claude Desktop compatibility
-LAYERS: MCP stdio (3 tools), InterLock UDP mesh (optional)
 
 ---
 
@@ -25,7 +24,7 @@ TOOLS (3)
 TOOL: organize_files
 INPUT: { sourcePath: string (required), options?: { dryRun: boolean (default: false), validateAll: boolean (default: true), batchSize: number (default: 10), confidenceThreshold: 0-1 (default: 0.3), classificationMode: "heuristic"|"catasorter"|"both" (default: "heuristic"), errorAbortThreshold: 0-1 (default: 0.2) } }
 OUTPUT: { operation_id: string, files_discovered: number, files_organized: number, files_skipped: number, errors: array, movements: [{ from: string, to: string, classification: object }] }
-USE: Organize files from source path using heuristic GLEC classification
+USE: Organize files using heuristic GLEC classification with validation and batch processing
 EXAMPLE: organize_files({ sourcePath: "/Dropository", options: { dryRun: true } })
 NOTES: Use dryRun first. "heuristic" is fast/local, "catasorter" uses external MCP, "both" combines.
 
@@ -67,6 +66,15 @@ INTERLOCK SIGNALS
 
 Emits: FILE_DISCOVERED (0x10)
 Accepts: DOCK_REQUEST, HEARTBEAT, FILE_INDEXED
+
+---
+
+LAYERS
+
+1. MCP stdio (3 tools) - Primary interface
+2. InterLock UDP mesh (port 3007) - Peer communication
+3. HTTP REST API (port 8007) - External integrations
+4. WebSocket real-time (port 9007) - Live updates
 
 ---
 

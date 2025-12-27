@@ -63,7 +63,7 @@ SOURCES
 - OpenAlex: Academic literature
 - DuckDuckGo: Privacy-focused web search
 
-CREDIBILITY: Domain reputation, SSL validation, content quality, bias detection
+CREDIBILITY: Domain reputation, SSL, content quality, bias detection
 
 ---
 

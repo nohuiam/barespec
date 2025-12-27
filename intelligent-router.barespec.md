@@ -1,6 +1,6 @@
 SERVER: intelligent-router
-VERSION: 1.2
-UPDATED: 2025-12-27
+VERSION: 1.1
+UPDATED: 2025-12-26
 STATUS: Production
 PORT: 3020 (UDP/InterLock), 8020 (HTTP), 9020 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -14,7 +14,8 @@ ARCHITECTURE
 
 WORKFLOW: 4-layer architecture (MCP stdio, InterLock UDP, HTTP REST, WebSocket)
 FUNCTION: Intent classification and workflow orchestration
-LEARNING: Pattern recognition from successful routings - tracks successful patterns for future routing optimization
+LEARNING: Pattern recognition from successful routings
+COMPLEXITY: 1-5 scale (1=single tool, 5=complex multi-step)
 INTERLOCK: BaNano protocol, signals 0xC0-0xCF (ROUTE_REQUEST, ROUTE_RESPONSE, ROUTE_COMPLETE)
 
 ---
@@ -33,7 +34,7 @@ INPUT: { limit?: number (default: 10), offset?: number (default: 0), intent?: st
 OUTPUT: { history: [{ request: string, intent: string, workflow: object, execution_time: number, status: string }], total: number, patterns: array }
 USE: View past routing decisions and patterns for learning and debugging
 EXAMPLE: get_routing_history({ limit: 20, status: "completed" })
-NOTES: patterns shows frequently used request-to-workflow mappings.
+NOTES: patterns shows frequently used request→workflow mappings.
 
 ---
 
@@ -55,6 +56,8 @@ COMPLEXITY LEVELS
 - 3: Multiple tools, some parallel
 - 4: Complex workflow, conditionals
 - 5: Multi-phase, requires validation
+
+LEARNING: Tracks successful patterns for future routing optimization
 
 ---
 
