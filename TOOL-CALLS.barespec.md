@@ -1,8 +1,8 @@
 LIBRARY: Server Tool Calls
-VERSION: 1.0
+VERSION: 1.1
 UPDATED: 2025-12-27
-SERVERS: 19
-TOOLS: 276 total
+SERVERS: 21
+TOOLS: 349 total
 PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and usage
 
 ---
@@ -28,6 +28,8 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 | pk-manager | 4 | PK | Rebuild, rollback |
 | research-bus | 12 | Research | Perplexity, citations |
 | intelligent-router | 2 | Routing | Intent detection |
+| tool-registry | 65 | Meta | Tool discovery, ecosystem coordination |
+| claude-code-bridge | 8 | Bridge | Desktop↔Code work orders |
 | filesystem-test | 12 | Files | CRUD operations |
 | verifier-mcp | 3 | Verification | Claims, fact-check |
 
@@ -531,6 +533,166 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 
 ---
 
+## TOOL-REGISTRY (65 tools)
+
+**Purpose:** Tool discovery, ecosystem coordination, capability matching
+
+### Core Registry (9)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_registry_add` | Register new tool | toolName, serverName, description, riskLevel |
+| `tool_registry_update` | Update tool metadata | toolName, description, enabled |
+| `tool_registry_delete` | Delete tool | toolName |
+| `tool_registry_get` | Get tool details | toolName |
+| `tool_registry_list` | List with filters | enabled, serverName, category |
+| `tool_registry_stats` | Registry statistics | (none) |
+| `tool_registry_approve` | Approve pending op | requestId, reason |
+| `tool_registry_deny` | Deny pending op | requestId, reason |
+| `tool_registry_pending` | List pending requests | (none) |
+
+### Capability Matching (1) - MOST IMPORTANT
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_registry_can_do` | "Can I do X?" query | query |
+
+### Curation (4)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_curator_flag` | Flag quality issue | toolName, flag, reason, curator |
+| `tool_curator_verify` | Mark as verified | toolName, curator |
+| `tool_curator_add_note` | Add curation note | toolName, note, curator |
+| `tool_curator_get_flagged` | Get flagged tools | flag |
+
+### Rating (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_rating_rate` | Rate 1-5 stars | toolName, rating, userId |
+| `tool_rating_review` | Write review | toolName, review, rating, userId |
+| `tool_rating_get_top_rated` | Top rated tools | limit, minRatings |
+
+### Analytics (4)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_analytics_usage` | Usage analytics | toolName |
+| `tool_analytics_trends` | Usage trends | toolName, days |
+| `tool_analytics_popular` | Most used tools | limit |
+| `tool_analytics_record_usage` | Record usage event | toolName, success, executionTime |
+
+### Recommendations (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_recommend_for_me` | Personalized recs | userId, limit |
+| `tool_recommend_similar` | Similar tools | toolName, limit |
+| `tool_recommend_trending` | Trending tools | limit, days |
+
+### LLM Intelligence (4)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_llm_suggest` | AI-powered LLM selection | taskDescription, requirements |
+| `tool_llm_list` | List LLM services | provider, availability |
+| `tool_llm_compare` | Compare LLMs | llmIds |
+| `tool_intelligence_stats` | LLM stats | (none) |
+
+### Search Intelligence (2)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_search_suggest` | Best search tool | requirements |
+| `tool_search_compare` | Compare search tools | (none) |
+
+### Pattern Learning (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_pattern_record_success` | Record success | taskType, llmUsed, executionTime, outcome |
+| `tool_pattern_get_insights` | Get patterns | taskType |
+| `tool_pattern_get_best_llm` | Best LLM for task | taskType, criteria |
+
+### Deprecation (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_deprecate` | Mark deprecated | toolIdentifier, reason, alternatives |
+| `tool_deprecation_get_alternatives` | Get alternatives | toolIdentifier |
+| `tool_deprecation_get_migration_guide` | Migration guide | fromTool, toTool |
+
+### Compatibility (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_compatibility_check` | Check compatible | tools |
+| `tool_compatibility_register_version` | Register version | toolIdentifier, version |
+| `tool_compatibility_report` | Compatibility report | (none) |
+
+### Notifications (2)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_notify` | Send notification | title, message, category, priority |
+| `tool_notifications_get` | Get notifications | category, priority, unreadOnly |
+
+### Learning System (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_learning_record_interaction` | Record interaction | type, outcome, context |
+| `tool_learning_get_recommendations` | Get learned recs | (none) |
+| `tool_learning_get_insights` | Learning insights | (none) |
+
+### Status & Health (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_status_dashboard` | Status dashboard | (none) |
+| `tool_status_summary` | Health summary | (none) |
+| `tool_status_health_check` | Run health check | (none) |
+
+### Ecosystem (5)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_ecosystem_servers_list` | List servers | type, status |
+| `tool_ecosystem_server_get` | Server details | serverId |
+| `tool_ecosystem_map` | Ecosystem map | (none) |
+| `tool_ecosystem_health` | Ecosystem health | (none) |
+| `tool_ecosystem_statistics` | Ecosystem stats | (none) |
+
+### Optimization (4)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_ecosystem_coordinate` | Coordinate ops | operation, servers |
+| `tool_optimizer_track_operation` | Track metrics | operationId, metrics |
+| `tool_optimizer_suggest` | Get suggestions | targetMetric |
+| `tool_optimizer_statistics` | Optimization stats | (none) |
+
+### Integration Adapters (6)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_guardian_validate` | Validate via guardian | operation, params |
+| `tool_quartermaster_recommend` | QM recommendations | path, action |
+| `tool_search_routing_suggest` | Search routing | query, context |
+| `tool_glec_classify` | GLEC classify | content, contentType |
+| `tool_glec_bulk_classify` | Bulk GLEC | tools |
+| `discover_tools` | Discover all tools | force |
+
+### Claude Integration (3)
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `tool_claude_desktop_capabilities` | Desktop capabilities | capability |
+| `tool_claude_desktop_updates` | Desktop updates | (none) |
+| `tool_remind_claude_capabilities` | Remind capabilities | (none) |
+
+---
+
+## CLAUDE-CODE-BRIDGE (8 tools)
+
+**Purpose:** Desktop-to-Code communication, work order management
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `create_work_order` | Create task for Code | sessionId, operation, targetPath, fileCount |
+| `get_work_order` | Get work order | id |
+| `list_work_orders` | List work orders | status |
+| `update_work_order` | Report progress | id, status, results |
+| `cancel_work_order` | Cancel work order | id |
+| `get_bridge_status` | Bridge health | (none) |
+| `get_neural_metrics` | Performance metrics | timeWindow |
+| `prune_old_work_orders` | Archive old orders | olderThanDays |
+
+---
+
 ## FILESYSTEM-TEST (12 tools)
 
 **Purpose:** File system CRUD operations
@@ -575,10 +737,12 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 | Temporal | 1 | 19 |
 | Orchestration | 2 | 16 |
 | Meta/Generation | 1 | 26 |
+| Meta/Registry | 1 | 65 |
 | Knowledge | 2 | 10 |
 | News/Media | 1 | 102 |
 | Verification | 1 | 3 |
 | Routing | 1 | 2 |
+| Bridge | 1 | 8 |
 | Backup | 1 | 6 |
 
 ---
