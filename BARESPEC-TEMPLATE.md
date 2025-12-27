@@ -1,8 +1,9 @@
-# BARESPEC TEMPLATE v1.0
+# BARESPEC TEMPLATE v1.1
 
 **Created:** 2025-12-26
+**Updated:** 2025-12-27
 **Purpose:** Standard template for all BOP/Imminence OS server documentation
-**Based on:** context-guardian.barespec.md (validated 100% accurate)
+**Format:** Consolidated single-file per server (no separate -tools files)
 
 ---
 
@@ -58,6 +59,7 @@ INPUT: { param: type (required|optional), ... }
 OUTPUT: { field: type, ... }
 USE: {one-line description of when to use}
 EXAMPLE: {tool_name}({ example_params })
+NOTES: {usage tips, caveats, best practices - optional}
 
 {Repeat for each tool}
 
@@ -133,50 +135,29 @@ DEPENDENCIES: {npm packages, comma-separated}
 
 ---
 
-## TOOLS BARESPEC TEMPLATE
+## REFERENCE SECTIONS (Optional)
 
-For `{server}-tools.barespec.md` files:
+Add unique sections after TOOLS when relevant:
 
 ```
-SERVER: {server-name}
-VERSION: {semver}
-UPDATED: {YYYY-MM-DD}
-TOOLS: {count}
-
 ---
 
-## {CATEGORY NAME} ({count})
+DOMAINS (if applicable)
+- {domain_name}: {description}
 
-### {tool_name}
+STRICTNESS LEVELS (if applicable)
+- {level}: {description}
 
-**Purpose:** {description}
+TELEMETRY FIELDS (if applicable)
+- {field}: {type} - {description}
 
-**Input Schema:**
-```json
-{
-  "param1": "type (required)",
-  "param2": "type (optional)"
-}
-```
+DATABASE SCHEMA (if complex)
+{schema details}
 
-**Output Schema:**
-```json
-{
-  "field1": "type",
-  "field2": "type"
-}
-```
-
-**Example:**
-```json
-{tool_name}({
-  "param1": "value"
-})
-```
+WORKFLOW (if multi-phase)
+{phase descriptions}
 
 ---
-
-{Repeat for each tool, grouped by category}
 ```
 
 ---
@@ -228,6 +209,7 @@ INPUT: { name: string (required) }
 OUTPUT: { greeting: string }
 USE: Say hello to someone
 EXAMPLE: example_hello({ name: "World" })
+NOTES: Returns localized greeting based on system locale.
 
 ---
 

@@ -1,6 +1,6 @@
 SERVER: pk-manager
-VERSION: 1.1
-UPDATED: 2025-12-26
+VERSION: 1.2
+UPDATED: 2025-12-27
 STATUS: Production
 PORT: 3018 (UDP/InterLock), 8018 (HTTP), 9018 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -23,27 +23,31 @@ TOOLS (4)
 
 TOOL: pk_rebuild
 INPUT: { source_path: string (required), options?: { dry_run: boolean (default: false), skip_backup: boolean (default: false), force: boolean (default: false), verificationLevel: "basic"|"standard"|"paranoid" (default: "standard") } }
-OUTPUT: { rebuildId, status, phases[], documentsTotal, documentsProcessed, documentsSucceeded, documentsFailed, verificationResults[], backupPath, duration }
+OUTPUT: { rebuildId: string, status: string, phases: array, documentsTotal: number, documentsProcessed: number, documentsSucceeded: number, documentsFailed: number, verificationResults: array, backupPath: string, duration: number }
 USE: Orchestrate complete PK rebuild with 7-phase workflow, safety checks, and automatic rollback
 EXAMPLE: pk_rebuild({ source_path: "/Users/macbook/Documents/inbox", options: { dry_run: true } })
+NOTES: ALWAYS dry_run first. "paranoid" verification runs all 6 tests twice. force=true skips pre-flight warnings.
 
 TOOL: get_rebuild_status
 INPUT: { rebuildId: string (required) }
-OUTPUT: { success: boolean, rebuild: { id, status, phases[], documentsTotal, documentsSucceeded } }
+OUTPUT: { success: boolean, rebuild: { id: string, status: string, phases: array, documentsTotal: number, documentsSucceeded: number } }
 USE: Check status of a specific rebuild operation
 EXAMPLE: get_rebuild_status({ rebuildId: "rebuild_abc123" })
+NOTES: Poll during long rebuilds. Status: pending, in_progress, success, failed, rolled_back.
 
 TOOL: list_rebuilds
 INPUT: { limit?: number (default: 10), status?: "pending"|"in_progress"|"success"|"failed"|"rolled_back" }
-OUTPUT: { success: boolean, count, rebuilds: [{ id, status, startedAt, completedAt, documentsTotal, documentsSucceeded }] }
+OUTPUT: { success: boolean, count: number, rebuilds: [{ id: string, status: string, startedAt: timestamp, completedAt: timestamp, documentsTotal: number, documentsSucceeded: number }] }
 USE: List recent rebuild operations with optional status filter
 EXAMPLE: list_rebuilds({ limit: 5, status: "success" })
+NOTES: Use to find rebuildId for rollback or status check.
 
 TOOL: rollback_rebuild
 INPUT: { rebuildId: string (required), backupId?: string }
-OUTPUT: { success: boolean, message, backupUsed }
+OUTPUT: { success: boolean, message: string, backupUsed: string }
 USE: Rollback to a previous backup state (uses latest backup if backupId not specified)
 EXAMPLE: rollback_rebuild({ rebuildId: "rebuild_abc123" })
+NOTES: Uses latest backup if backupId not specified. Rollback is itself a tracked operation.
 
 ---
 

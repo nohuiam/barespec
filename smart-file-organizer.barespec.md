@@ -1,6 +1,6 @@
 SERVER: smart-file-organizer
-VERSION: 2.0
-UPDATED: 2025-12-26
+VERSION: 2.1
+UPDATED: 2025-12-27
 STATUS: Production
 PORT: 3007 (UDP/InterLock), 8007 (HTTP), 9007 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -24,29 +24,40 @@ TOOLS (3)
 
 TOOL: organize_files
 INPUT: { sourcePath: string (required), options?: { dryRun: boolean (default: false), validateAll: boolean (default: true), batchSize: number (default: 10), confidenceThreshold: 0-1 (default: 0.3), classificationMode: "heuristic"|"catasorter"|"both" (default: "heuristic"), errorAbortThreshold: 0-1 (default: 0.2) } }
-OUTPUT: { operation_id, files_discovered, files_organized, files_skipped, errors: [], movements: [{ from, to, classification }] }
-USE: Organize files using heuristic GLEC classification with validation and batch processing
+OUTPUT: { operation_id: string, files_discovered: number, files_organized: number, files_skipped: number, errors: array, movements: [{ from: string, to: string, classification: object }] }
+USE: Organize files from source path using heuristic GLEC classification
 EXAMPLE: organize_files({ sourcePath: "/Dropository", options: { dryRun: true } })
+NOTES: Use dryRun first. "heuristic" is fast/local, "catasorter" uses external MCP, "both" combines.
 
 TOOL: get_organization_stats
 INPUT: { timeRange?: "hour"|"day"|"week"|"month"|"all" (default: "day"), includeReviewQueue?: boolean (default: true), includeErrorAnalysis?: boolean (default: true) }
-OUTPUT: { total_operations, files_organized, success_rate, by_classification: {}, recent_movements?: [] }
+OUTPUT: { total_operations: number, files_organized: number, success_rate: number, by_classification: object, recent_movements?: array }
 USE: Get organization statistics and metrics
 EXAMPLE: get_organization_stats({ timeRange: "week" })
+NOTES: includeReviewQueue shows files needing manual review.
 
 TOOL: rollback_operation
 INPUT: { movementId?: string, batchId?: string, timeRange?: "hour"|"day"|"all", confirmDangerous?: boolean (default: false) }
-OUTPUT: { success: boolean, files_restored, errors: [] }
+OUTPUT: { success: boolean, files_restored: number, errors: array }
 USE: Rollback file movements to restore files to original locations
 EXAMPLE: rollback_operation({ movementId: "mov_123", confirmDangerous: true })
+NOTES: Supports single file, batch, or time-range rollbacks. Requires confirmDangerous for dangerous ops.
+
+---
+
+CLASSIFICATION MODES
+
+- heuristic: Fast, local, uses file patterns and content heuristics
+- catasorter: Uses CataSORTER MCP for GLEC classification
+- both: Runs heuristic first, uses catasorter for validation
 
 ---
 
 SERVICES
 
-- FileDiscoveryService: Find files to organize
-- HeuristicClassifier: Fast local classification
-- FileMovementService: Safe file moving with tracking
+- FileDiscoveryService: Watches /Dropository for new files
+- HeuristicClassifier: Pattern-based classification
+- FileMovementService: Safe file moves with audit trail
 - AnalysisService: Content analysis
 - ConsolidationService: Duplicate handling
 
