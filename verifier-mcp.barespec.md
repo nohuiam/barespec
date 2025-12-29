@@ -1,10 +1,10 @@
 SERVER: verifier-mcp
-VERSION: 1.0
-UPDATED: 2025-12-26
+VERSION: 1.1
+UPDATED: 2025-12-29
 STATUS: Production
 PORT: 3021 (UDP/InterLock), 8021 (HTTP), 9021 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
-DEPS: Anthropic API (Pass A/B evaluation), HuggingFace (MiniCheck NLI)
+DEPS: Anthropic API (Pass A/B evaluation), HuggingFace (RoBERTa NLI)
 PURPOSE: Adversarial fact-checking with dual-polarity claim verification
 CONFIG: /repo/verifier-mcp/config/interlock.json
 
@@ -14,7 +14,7 @@ ARCHITECTURE
 
 WORKFLOW: 4-layer architecture (MCP stdio, InterLock UDP, HTTP REST, WebSocket)
 PRINCIPLE: The unit of verification is a CLAIM, not a document
-PIPELINE: Claimify extraction → V5 Fast-path (NLI → MiniCheck → Pass B)
+PIPELINE: Claimify extraction → V5 Fast-path (NLI → Stage2-NLI → Pass B)
 SCORING: CorXFact dual-polarity (support + contradiction)
 INTERLOCK: BaNano protocol, signals 0xE0-0xE3 (VERIFY_REQUEST, VERIFY_RESPONSE, CLAIM_RESOLVED, BATCH_COMPLETE)
 
@@ -34,7 +34,7 @@ INPUT: { domain: string (required), claims: [{ id, text, confidence?, depends_on
 OUTPUT: { summary: { verified, challenged, rejected, ambiguous }, results: [{ id, status, confidence, verdict, supporting_sources, qualifiers, counterexamples }], source_credibilities }
 USE: Dual-polarity adversarial verification with Pass A (support) and Pass B (adversarial)
 EXAMPLE: verify_claims({ domain: "software", claims: [{ id: "c1", text: "HTTP 200 indicates success" }] })
-NOTES: V5 fast-path: NLI → MiniCheck → Pass B. enable_fast_path=true handles ~80% of claims locally (free). Dependency propagation: if depends_on claim fails, dependent auto-downgrades.
+NOTES: V5 fast-path: Stage1-NLI → Stage2-NLI → Pass B. enable_fast_path=true handles ~80% of claims locally (free). Stage 2 uses RoBERTa trained on FEVER for fact-checking. Dependency propagation: if depends_on claim fails, dependent auto-downgrades.
 
 TOOL: list_sources
 INPUT: { domain?: string, query?: string, include_superseded?: boolean (default: false) }
@@ -48,10 +48,14 @@ NOTES: Sources have trust_level 0-1. Superseded sources replaced by newer versio
 VERIFICATION FLOW
 
 V5 FAST-PATH:
-1. NLI Check: Local model, entailment/contradiction/neutral
-2. MiniCheck: HuggingFace API, fact-grounded consistency
+1. Stage 1 NLI: Local DeBERTa-v3 (transformers.js), entailment/contradiction/neutral
+2. Stage 2 NLI: HuggingFace API (ynie/roberta-large-snli_mnli_fever_anli), contradiction detection
 3. Early Exit: If high confidence (>0.85), skip Pass B
 4. Pass B: LLM adversarial evaluation (constraints, edge cases)
+
+MODELS:
+- Stage 1: Xenova/deberta-v3-base-mnli-fever-anli (local ONNX, FREE)
+- Stage 2: ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli (HF API, trained on FEVER)
 
 VERDICTS: SUPPORTED, SUPPORTED_WITH_QUALIFIERS, CONTRADICTED, AMBIGUOUS, UNSUPPORTED
 
@@ -97,9 +101,9 @@ C↔S ping/pong                    → Keepalive
 
 TELEMETRY FIELDS
 
-- nli_entailment, nli_neutral, nli_contradiction: NLI scores
-- minicheck_score: MiniCheck grounding score
-- stage_exit: "NLI"|"MINICHECK"|"FULL": Where fast-path exited
+- nli_entailment, nli_neutral, nli_contradiction: Stage 1 NLI scores
+- stage2_contradiction_score: Stage 2 RoBERTa contradiction score
+- stage_exit: "NLI"|"MINICHECK"|"PASS_B": Where fast-path exited
 - overconfidence_gap: Difference between claimed and actual confidence
 - cost_usd: API cost for this claim verification
 
