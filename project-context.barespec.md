@@ -1,6 +1,6 @@
 SERVER: project-context
-VERSION: 1.2
-UPDATED: 2025-12-27
+VERSION: 1.3
+UPDATED: 2025-12-30
 STATUS: Production
 PORT: 3016 (UDP/InterLock), 8016 (HTTP), 9016 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -72,12 +72,93 @@ ENFORCEMENT: Rate limits, cost tracking
 
 ---
 
+HTTP REST API (port 8016)
+
+ENDPOINT: GET /health
+OUTPUT: { status: "healthy", server: string, version: string, uptime: object, ports: object, timestamp: string }
+USE: Health check and server status
+
+ENDPOINT: GET /stats
+OUTPUT: { success: boolean, stats: { rateLimits: object, costTracking: object, paths: object, limits: object }, timestamp: string }
+USE: Server statistics including rate limit and cost tracking
+
+ENDPOINT: GET /api/v1/configuration
+OUTPUT: { success: boolean, configuration: object, metadata: object }
+USE: Get complete project configuration
+
+ENDPOINT: GET /api/v1/configuration/:section
+PARAMS: section = paths|limits|rate_limits|safety
+OUTPUT: { success: boolean, section: string, configuration: object, timestamp: string }
+USE: Get specific configuration section
+
+ENDPOINT: POST /api/v1/paths/validate
+INPUT: { path: string, operation: "read"|"write"|"delete" }
+OUTPUT: { success: boolean, allowed: boolean, reason?: string, path: string, operation: string, limits: object, timestamp: string }
+USE: Validate path for specific operation
+
+ENDPOINT: GET /api/v1/paths/config
+PARAMS: ?path=string
+OUTPUT: { success: boolean, path: string, allowed: boolean, permissions: object, limits: object, safetyLimits: object, timestamp: string }
+USE: Get configuration for specific path
+
+ENDPOINT: POST /api/v1/rate-limits/check
+INPUT: { operation: string, cost?: number }
+OUTPUT: { success: boolean, allowed: boolean, remaining: number, resetIn: number, costTracking: object, timestamp: string }
+USE: Check and record operation against rate limits
+
+ENDPOINT: GET /api/v1/rate-limits/stats
+OUTPUT: { success: boolean, stats: object, costTracking: object, timestamp: string }
+USE: Get rate limit statistics
+
+---
+
+WEBSOCKET EVENTS (port 9016)
+
+EVENT: connected
+DIRECTION: server -> client
+DATA: { clientId: string, server: string, version: string, availableEvents: array }
+USE: Sent on connection establishment
+
+EVENT: config_updated
+DIRECTION: server -> client
+DATA: { section: string, previousValue: object, newValue: object }
+USE: Broadcast when configuration changes
+
+EVENT: path_validation
+DIRECTION: server -> client
+DATA: { path: string, operation: string, allowed: boolean, reason?: string }
+USE: Broadcast on path validation requests
+
+EVENT: rate_limit_exceeded
+DIRECTION: server -> client
+DATA: { operation: string, remaining: number, resetIn: number, currentCount: number, limit: number }
+USE: Broadcast when rate limit is hit
+
+EVENT: stats_update
+DIRECTION: server -> client
+DATA: { rateLimits: object, currentHourCost: number }
+USE: Periodic stats update
+
+CLIENT MESSAGE: subscribe
+DATA: { type: "subscribe", events: string[] }
+USE: Subscribe to specific events
+
+CLIENT MESSAGE: ping
+DATA: { type: "ping" }
+RESPONSE: { type: "pong", data: { timestamp: number } }
+USE: Keepalive check
+
+---
+
 KEY FILES
 
 SOURCE: /repo/project-context/
 INDEX: src/index.ts
 TYPES: src/types.ts
 VALIDATION: src/validation/paths.ts, src/validation/limits.ts
+HTTP: src/http/server.ts
+WEBSOCKET: src/websocket/server.ts
 UTILS: src/utils/logger.ts
+TESTS: tests/validation.test.ts, tests/ratelimit.test.ts, tests/http.test.ts, tests/websocket.test.ts
 
-DEPENDENCIES: None (standalone safety server)
+DEPENDENCIES: @modelcontextprotocol/sdk, express, ws, cors, winston, lru-cache, zod
