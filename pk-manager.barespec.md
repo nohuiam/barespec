@@ -1,6 +1,6 @@
 SERVER: pk-manager
-VERSION: 1.2
-UPDATED: 2025-12-27
+VERSION: 1.3
+UPDATED: 2025-12-30
 STATUS: Production
 PORT: 3018 (UDP/InterLock), 8018 (HTTP), 9018 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -16,6 +16,80 @@ DATABASE: SQLite (better-sqlite3)
 PIPELINE: 7-phase rebuild workflow
 SAFETY: Automatic rollback on critical verification failure
 INTERLOCK: BaNano protocol, signals 0xD0-0xDF (REBUILD_REQUEST, REBUILD_COMPLETE)
+
+---
+
+HTTP REST API (port 8018)
+
+ENDPOINT: GET /health
+OUTPUT: { status: "healthy", server: string, version: string, uptime: { ms: number, human: string }, activeRebuild: string|null, ports: object, timestamp: string }
+USE: Health check and server status
+
+ENDPOINT: GET /stats
+OUTPUT: { success: boolean, stats: { rebuildsTotal: number, rebuildsSuccess: number, rebuildsFailed: number, rebuildsRolledBack: number, successRate: string, avgDurationMs: number, avgDurationHuman: string }, activeRebuild: string|null, timestamp: string }
+USE: Rebuild statistics and success rates
+
+ENDPOINT: GET /api/v1/rebuilds
+PARAMS: ?limit=20&status=success|failed|rolled_back
+OUTPUT: { success: boolean, count: number, limit: number, activeRebuild: string|null, rebuilds: array }
+USE: List rebuild operations with pagination and filtering
+
+ENDPOINT: GET /api/v1/rebuilds/:id
+OUTPUT: { success: boolean, rebuild: { id, status, sourcePath, backupPath, documentsTotal, documentsProcessed, documentsSucceeded, documentsFailed, phases, verificationResults, startedAt, completedAt, duration, error }, backups: array }
+USE: Get specific rebuild with phases and backups
+
+ENDPOINT: GET /api/v1/backups
+PARAMS: ?rebuildId=xxx OR ?latest=true
+OUTPUT: { success: boolean, count: number, backups: array } OR { success: boolean, backup: object|null }
+USE: List backups for rebuild or get latest backup
+
+---
+
+WEBSOCKET EVENTS (port 9018)
+
+EVENT: connected
+DIRECTION: server -> client
+DATA: { clientId: string, server: string, version: string, availableEvents: array }
+USE: Sent on connection establishment
+
+EVENT: rebuild_started
+DIRECTION: server -> client
+DATA: { rebuildId: string, sourcePath: string, totalPhases: number }
+USE: Broadcast when rebuild operation begins
+
+EVENT: phase_started
+DIRECTION: server -> client
+DATA: { rebuildId: string, phase: number, phaseName: string, totalPhases: number }
+USE: Broadcast when a phase begins
+
+EVENT: phase_completed
+DIRECTION: server -> client
+DATA: { rebuildId: string, phase: number, phaseName: string, success: boolean, durationMs: number, details?: object }
+USE: Broadcast when a phase finishes
+
+EVENT: rebuild_complete
+DIRECTION: server -> client
+DATA: { rebuildId: string, status: "success"|"failed"|"rolled_back", documentsTotal: number, documentsSucceeded: number, documentsFailed: number, totalDurationMs: number, error?: string }
+USE: Broadcast when rebuild operation finishes
+
+EVENT: rollback_started
+DIRECTION: server -> client
+DATA: { rebuildId: string, backupId: string, reason: string }
+USE: Broadcast when rollback begins
+
+EVENT: rollback_complete
+DIRECTION: server -> client
+DATA: { rebuildId: string, backupId: string, success: boolean, entriesRestored: number, error?: string }
+USE: Broadcast when rollback finishes
+
+CLIENT MESSAGE: subscribe
+DATA: { type: "subscribe", events: string[] }
+USE: Subscribe to specific events
+
+CLIENT MESSAGE: ping
+DATA: { type: "ping" }
+RESPONSE: { type: "pong", data: { timestamp: number } }
+USE: Keepalive check
 
 ---
 
@@ -90,6 +164,15 @@ INDEX: src/index.ts
 TYPES: src/types.ts
 DATABASE: src/database/schema.ts
 BACKUP: src/backup/evacuator.ts
+HTTP: src/http/server.ts
+WEBSOCKET: src/websocket/server.ts
 UTILS: src/utils/checksum.ts, src/utils/logger.ts
+TESTS: tests/database.test.ts, tests/rebuild.test.ts, tests/backup.test.ts
+CONFIG: config/interlock.json
 
-DEPENDENCIES: project-context, knowledge-curator, PK API (Notion)
+---
+
+DEPENDENCIES
+
+RUNTIME: @modelcontextprotocol/sdk, better-sqlite3, express, ws, cors, winston, uuid, zod, async-sema
+DEV: typescript, vitest, @types/node, @types/better-sqlite3, @types/express, @types/ws, @types/cors, @types/uuid
