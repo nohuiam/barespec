@@ -1,10 +1,10 @@
 SERVER: intelligent-router
-VERSION: 1.1
-UPDATED: 2025-12-26
+VERSION: 1.2
+UPDATED: 2025-12-30
 STATUS: Production
 PORT: 3020 (UDP/InterLock), 8020 (HTTP), 9020 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
-DEPS: Claude API (intent classification)
+DEPS: Claude API (intent classification - optional)
 PURPOSE: Natural language to automated multi-tool workflow routing
 CONFIG: /repo/intelligentrouter/config/interlock.json
 
@@ -34,7 +34,7 @@ INPUT: { limit?: number (default: 10), offset?: number (default: 0), intent?: st
 OUTPUT: { history: [{ request: string, intent: string, workflow: object, execution_time: number, status: string }], total: number, patterns: array }
 USE: View past routing decisions and patterns for learning and debugging
 EXAMPLE: get_routing_history({ limit: 20, status: "completed" })
-NOTES: patterns shows frequently used request→workflow mappings.
+NOTES: patterns shows frequently used request->workflow mappings.
 
 ---
 
@@ -61,10 +61,100 @@ LEARNING: Tracks successful patterns for future routing optimization
 
 ---
 
+HTTP REST API (port 8020)
+
+ENDPOINT: GET /health
+OUTPUT: { status: string, server: string, version: string, uptime: object, ports: object, routing: object, timestamp: string }
+USE: Health check with routing statistics
+
+ENDPOINT: GET /stats
+OUTPUT: { success: boolean, stats: { routing: object, patterns: object, monitoring: object }, timestamp: string }
+USE: Comprehensive routing and pattern statistics
+
+ENDPOINT: GET /api/v1/routing/history
+OUTPUT: { success: boolean, count: number, history: array, pagination: object, timestamp: string }
+USE: Query routing history with pagination and filters
+
+ENDPOINT: GET /api/v1/routing/:requestId
+OUTPUT: { success: boolean, routing: object, timestamp: string }
+USE: Get specific routing by request ID
+
+ENDPOINT: POST /api/v1/routing/request
+INPUT: { request: string, context?: object, routing?: object, learning?: object }
+OUTPUT: { success: boolean, result: object, timestamp: string }
+USE: Route a request via HTTP
+
+ENDPOINT: POST /api/v1/cleanup
+OUTPUT: { success: boolean, message: string, timestamp: string }
+USE: Trigger database cleanup
+
+---
+
+WEBSOCKET EVENTS (port 9020)
+
+EVENT: connected
+DIRECTION: server -> client
+DATA: { clientId: string, server: string, version: string, routing: object, availableEvents: array }
+USE: Sent on connection establishment
+
+EVENT: routing_started
+DIRECTION: server -> client
+DATA: { requestId: string, rawRequest: string, timestamp: string }
+USE: Broadcast when routing request begins
+
+EVENT: intent_detected
+DIRECTION: server -> client
+DATA: { requestId: string, intent: string, confidence: number, timestamp: string }
+USE: Broadcast when intent analysis completes
+
+EVENT: pattern_matched
+DIRECTION: server -> client
+DATA: { requestId: string, patternId: string, similarity: number, timestamp: string }
+USE: Broadcast when learned pattern matches
+
+EVENT: tools_selected
+DIRECTION: server -> client
+DATA: { requestId: string, tools: array, scores: object, timestamp: string }
+USE: Broadcast when tools are selected
+
+EVENT: execution_plan_ready
+DIRECTION: server -> client
+DATA: { requestId: string, plan: object, coordinationPattern: string, timestamp: string }
+USE: Broadcast when execution plan is ready
+
+EVENT: routing_complete
+DIRECTION: server -> client
+DATA: { requestId: string, success: boolean, durationMs: number, timestamp: string }
+USE: Broadcast when routing completes
+
+EVENT: error_occurred
+DIRECTION: server -> client
+DATA: { requestId: string, error: string, recoverable: boolean, timestamp: string }
+USE: Broadcast on routing error
+
+EVENT: stats_update
+DIRECTION: server -> client
+DATA: { routing: object, patterns: object, timestamp: string }
+USE: Periodic stats broadcast (30s)
+
+CLIENT MESSAGE: subscribe
+DATA: { type: "subscribe", events: string[] }
+USE: Subscribe to specific events
+
+CLIENT MESSAGE: ping
+DATA: { type: "ping" }
+RESPONSE: { type: "pong", data: { timestamp: number } }
+USE: Keepalive check
+
+---
+
 KEY FILES
 
 SOURCE: /repo/intelligentrouter/
 INDEX: src/index.ts
 ROUTER: src/services/intelligentRouter.ts
+HTTP: src/http/server.ts
+WEBSOCKET: src/websocket/server.ts
+TESTS: tests/http.test.ts, tests/websocket.test.ts
 
-DEPENDENCIES: Claude API (intent classification), Zod (schema validation)
+DEPENDENCIES: @modelcontextprotocol/sdk, better-sqlite3, express, ws, cors, uuid, zod
