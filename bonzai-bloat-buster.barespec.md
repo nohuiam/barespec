@@ -1,6 +1,6 @@
 SERVER: bonzai-bloat-buster
-VERSION: 3.1
-UPDATED: 2025-12-26
+VERSION: 3.2
+UPDATED: 2025-12-30
 STATUS: Production
 PORT: 3008 (UDP/InterLock), 8008 (HTTP), 9008 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -75,14 +75,93 @@ SIMILARITY THRESHOLDS
 
 ---
 
+HTTP REST API (port 8008)
+
+ENDPOINT: GET /health
+OUTPUT: { status: string, server: string, version: string, uptime: object, ports: object, qdrant: object, timestamp: string }
+USE: Health check with Qdrant status
+
+ENDPOINT: GET /stats
+OUTPUT: { success: boolean, stats: { qdrant: object, cache: object }, timestamp: string }
+USE: Storage and cache statistics
+
+ENDPOINT: GET /api/v1/documents
+OUTPUT: { success: boolean, count: number, documents: array, timestamp: string }
+USE: List all indexed documents
+
+ENDPOINT: GET /api/v1/documents/:identifier
+OUTPUT: { success: boolean, document: object, timestamp: string }
+USE: Get document by path or hash
+
+ENDPOINT: GET /api/v1/collection
+OUTPUT: { success: boolean, collection: object, timestamp: string }
+USE: Qdrant collection info
+
+ENDPOINT: GET /api/v1/cache
+OUTPUT: { success: boolean, cache: object, timestamp: string }
+USE: Embedding cache statistics
+
+---
+
+WEBSOCKET EVENTS (port 9008)
+
+EVENT: connected
+DIRECTION: server -> client
+DATA: { clientId: string, server: string, version: string, qdrant: object, availableEvents: array }
+USE: Sent on connection establishment
+
+EVENT: document_processed
+DIRECTION: server -> client
+DATA: { filepath: string, hash: string, chunks: number, wordCount: number, timestamp: string }
+USE: Broadcast when document is embedded
+
+EVENT: comparison_complete
+DIRECTION: server -> client
+DATA: { fileA: string, fileB: string, matchType: string, semantic: number, structural: number, exact: number, timestamp: string }
+USE: Broadcast when pair comparison completes
+
+EVENT: duplicate_detected
+DIRECTION: server -> client
+DATA: { filepath: string, duplicateOf: string, similarity: number, matchType: string, timestamp: string }
+USE: Broadcast when high-similarity match found
+
+EVENT: plan_generated
+DIRECTION: server -> client
+DATA: { planId: string, actions: number, riskLevel: string, timestamp: string }
+USE: Broadcast when consolidation plan ready
+
+EVENT: consolidation_progress
+DIRECTION: server -> client
+DATA: { planId: string, step: number, total: number, currentAction: string, timestamp: string }
+USE: Real-time execution progress
+
+EVENT: stats_update
+DIRECTION: server -> client
+DATA: { qdrant: object, cache: object, timestamp: string }
+USE: Periodic stats broadcast (30s)
+
+CLIENT MESSAGE: subscribe
+DATA: { type: "subscribe", events: string[] }
+USE: Subscribe to specific events
+
+CLIENT MESSAGE: ping
+DATA: { type: "ping" }
+RESPONSE: { type: "pong", data: { timestamp: number } }
+USE: Keepalive check
+
+---
+
 KEY FILES
 
 SOURCE: /repo/bonzai-bloat-buster/
 INDEX: src/index.ts
 TYPES: src/types.ts
-EMBEDDING: src/embedding/embeddingPipeline.js, src/embedding/vectorStorage.js
-DETECTION: src/detection/similarityDetector.js, src/detection/obsolescenceDetector.js
-ANALYSIS: src/analysis/reportGenerator.js, src/analysis/consolidationPlanner.js, src/analysis/consolidationExecutor.js
-PROCESSING: src/processing/documentChunker.js
+HTTP: src/http/server.ts
+WEBSOCKET: src/websocket/server.ts
+EMBEDDING: src/embedding/embeddingPipeline.ts, src/embedding/vectorStorage.ts
+DETECTION: src/detection/similarityDetector.ts, src/detection/obsolescenceDetector.ts
+ANALYSIS: src/analysis/reportGenerator.ts, src/analysis/consolidationPlanner.ts, src/analysis/consolidationExecutor.ts
+PROCESSING: src/processing/documentChunker.ts
+TESTS: tests/http.test.ts, tests/websocket.test.ts
 
-DEPENDENCIES: Qdrant (local), all-MiniLM-L6-v2 embeddings (384 dimensions)
+DEPENDENCIES: @modelcontextprotocol/sdk, @xenova/transformers, @qdrant/js-client-rest, express, ws, cors, better-sqlite3, winston, p-queue
