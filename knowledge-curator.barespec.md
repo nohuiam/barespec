@@ -1,6 +1,6 @@
 SERVER: knowledge-curator
-VERSION: 1.2
-UPDATED: 2025-12-27
+VERSION: 1.3
+UPDATED: 2025-12-30
 STATUS: Production
 PORT: 3017 (UDP/InterLock), 8017 (HTTP), 9017 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -12,10 +12,79 @@ CONFIG: /repo/knowledge-curator/config/interlock.json
 ARCHITECTURE
 
 WORKFLOW: 4-layer architecture (MCP stdio, InterLock UDP, HTTP REST, WebSocket)
-DATABASE: SQLite (better-sqlite3)
-COMPRESSION: SCOPE method (Semantic Chunking + Rewriting)
+DATABASE: SQLite with FTS5 (better-sqlite3)
+COMPRESSION: SCOPE method (Semantic Chunking with Optimized Processing for Efficiency)
 GLEC: Genesis (strategy), Leviticus (process), Exodus (implementation), Context (reference)
 INTERLOCK: BaNano protocol, signals 0xB0-0xBF (CURATE_REQUEST, CURATE_COMPLETE)
+
+---
+
+HTTP REST API (port 8017)
+
+ENDPOINT: GET /health
+OUTPUT: { status: "healthy", server: string, version: string, uptime: { ms: number, human: string }, ports: object, timestamp: string }
+USE: Health check and server status
+
+ENDPOINT: GET /stats
+OUTPUT: { success: boolean, timeRange: string, aggregated: { totalDocuments, avgCompressionRatio, totalTokensSaved, avgProcessingTimeMs }, recentDocuments: array }
+USE: Compression statistics for last 24 hours
+
+ENDPOINT: GET /api/v1/entries
+PARAMS: ?limit=50&offset=0&glec=Genesis&subject=Architecture
+OUTPUT: { success: boolean, count: number, entries: array }
+USE: List PK entries with pagination and filtering
+
+ENDPOINT: GET /api/v1/entries/:id
+OUTPUT: { success: boolean, entry: PKEntry }
+USE: Get specific PK entry by ID
+
+ENDPOINT: GET /api/v1/search
+PARAMS: ?q=query&limit=20
+OUTPUT: { success: boolean, query: string, count: number, results: array }
+USE: Full-text search via FTS5
+
+ENDPOINT: GET /api/v1/graph/:id
+PARAMS: ?depth=2&types=cites,extends
+OUTPUT: { success: boolean, startNode: string, depth: number, nodes: array, edges: array }
+USE: Query knowledge graph relationships
+
+---
+
+WEBSOCKET EVENTS (port 9017)
+
+EVENT: connected
+DIRECTION: server → client
+DATA: { clientId: string, server: string, version: string, availableEvents: array }
+USE: Sent on connection establishment
+
+EVENT: curation_started
+DIRECTION: server → client
+DATA: { documentId: string, filePath: string, classification: string }
+USE: Broadcast when curation begins
+
+EVENT: curation_complete
+DIRECTION: server → client
+DATA: { documentId: string, title: string, compressionRatio: string, tokensSaved: number, processingTimeMs: number }
+USE: Broadcast when curation finishes
+
+EVENT: stats_update
+DIRECTION: server → client
+DATA: { totalDocuments: number, avgCompressionRatio: string, totalTokensSaved: number }
+USE: Periodic statistics broadcast
+
+EVENT: crossref_created
+DIRECTION: server → client
+DATA: { sourceId: string, targetId: string, referenceType: string }
+USE: Broadcast when cross-reference created
+
+CLIENT MESSAGE: subscribe
+DATA: { type: "subscribe", events: string[] }
+USE: Subscribe to specific events
+
+CLIENT MESSAGE: ping
+DATA: { type: "ping" }
+RESPONSE: { type: "pong", data: { timestamp: number } }
+USE: Keepalive check
 
 ---
 
@@ -73,3 +142,14 @@ TYPES: src/types.ts
 DATABASE: src/database/schema.ts
 COMPRESSION: src/compression/compressor.ts
 CROSSREF: src/crossref/builder.ts
+HTTP: src/http/server.ts
+WEBSOCKET: src/websocket/server.ts
+TESTS: tests/compression.test.ts, tests/database.test.ts
+CONFIG: config/interlock.json
+
+---
+
+DEPENDENCIES
+
+RUNTIME: @modelcontextprotocol/sdk, better-sqlite3, express, ws, cors, winston, lru-cache, uuid, zod
+DEV: typescript, vitest, @types/node, @types/better-sqlite3, @types/express, @types/ws, @types/cors, @types/uuid
