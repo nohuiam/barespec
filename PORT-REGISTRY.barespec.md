@@ -1,6 +1,6 @@
 REGISTRY: BOP Servers Port Allocation
-VERSION: 2.0
-UPDATED: 2025-12-26
+VERSION: 2.1
+UPDATED: 2026-01-02
 AUDITED: Source code audit (not documentation)
 
 ---
@@ -40,6 +40,12 @@ PATTERN: Server N uses 300N, 800N, 900N
 | research-bus | - | 8019 | - | HTTP-only | Perplexity API |
 | intelligent-router | 3020 | 8020 | 9020 | Production | Claude API |
 | verifier-mcp | 3021 | 8021 | 9021 | Production | Anthropic API, HuggingFace |
+| safe-batch-processor | 3022 | 8022 | 9022 | Tested (29) | SQLite |
+| intake-guardian | 3023 | 8023 | 9023 | Tested (27) | SQLite, BBB (8008) |
+| health-monitor | 3024 | 8024 | 9024 | Tested (24) | SQLite |
+| synapse-relay | 3025 | 8025 | 9025 | Tested (23) | SQLite |
+| filesystem-guardian | 3026 | 8026 | 9026 | Tested (6) | macOS-native (xattr, mdfind) |
+| consolidation-engine | 3032 | 8032 | 9032 | Tested (217) | SQLite |
 | filesystem | - | - | - | 3rd party | 3rd party npm |
 
 ---
@@ -172,6 +178,54 @@ HTTP: 8021 - Claims extraction/verification API
 WS: 9021 - Verification progress events
 DEPS: Anthropic API, HuggingFace (MiniCheck)
 
+### safe-batch-processor (3022/8022/9022)
+SOURCE: /repo/safe-batch-processor/config/interlock.json
+UDP: 3022 - InterLock mesh
+HTTP: 8022 - Batch operations API
+WS: 9022 - Batch progress events
+DEPS: SQLite (local), consolidation-engine, project-context, snapshot, smart-file-organizer
+
+### intake-guardian (3023/8023/9023)
+SOURCE: /repo/intake-guardian/config/interlock.json
+UDP: 3023 - InterLock mesh
+HTTP: 8023 - Content admission API
+WS: 9023 - Admission decision events
+DEPS: SQLite (local), BBB (8008 for redundancy scores)
+
+### health-monitor (3024/8024/9024)
+SOURCE: /repo/health-monitor/config/interlock.json
+UDP: 3024 - InterLock mesh
+HTTP: 8024 - Health status API, alerts API
+WS: 9024 - Real-time health alerts
+DEPS: SQLite (local)
+PURPOSE: Monitor health of all 22+ ecosystem servers
+
+### synapse-relay (3025/8025/9025)
+SOURCE: /repo/synapse-relay/config/interlock.json
+UDP: 3025 - InterLock mesh
+HTTP: 8025 - Relay rules API, buffer management
+WS: 9025 - Relay events, buffer status
+DEPS: SQLite (local)
+PURPOSE: Neural packet routing, signal relay between servers
+
+### filesystem-guardian (3026/8026/9026)
+SOURCE: /repo/filesystem-guardian/config/interlock.json
+UDP: 3026 - InterLock mesh
+HTTP: 8026 - xattr API, Spotlight API, watch management
+WS: 9026 - Filesystem events
+DEPS: macOS-native (xattr CLI, mdfind, fs.watch)
+PURPOSE: Extended attributes, Spotlight search, filesystem monitoring
+
+### consolidation-engine (3032/8032/9032)
+SOURCE: /repo/consolidation-engine/config/interlock.json
+UDP: 3032 - InterLock mesh
+HTTP: 8032 - Merge plans API, conflict resolution
+WS: 9032 - Merge progress events
+DEPS: SQLite (local)
+TESTS: 217 (89% statement coverage, 76% branch coverage)
+CI: GitHub Actions (Node 18/20/22)
+REPO: https://github.com/nohuiam/consolidation-engine
+
 ### filesystem (stdio only)
 SOURCE: npm @modelcontextprotocol/server-filesystem
 UDP: None
@@ -212,6 +266,12 @@ ACTIVE MESH PARTICIPANTS:
 - pk-manager (3018)
 - intelligent-router (3020)
 - verifier-mcp (3021)
+- safe-batch-processor (3022)
+- intake-guardian (3023)
+- health-monitor (3024)
+- synapse-relay (3025)
+- filesystem-guardian (3026)
+- consolidation-engine (3032)
 
 HTTP-ONLY SERVERS:
 - looker (8006)
