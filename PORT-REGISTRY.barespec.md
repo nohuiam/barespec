@@ -1,6 +1,6 @@
 REGISTRY: BOP Servers Port Allocation
-VERSION: 2.1
-UPDATED: 2026-01-02
+VERSION: 2.2
+UPDATED: 2026-01-03
 AUDITED: Source code audit (not documentation)
 
 ---
@@ -23,7 +23,7 @@ PATTERN: Server N uses 300N, 800N, 900N
 | context-guardian | 3001 | 8001 | 9001 | Production | Redis 6379 |
 | quartermaster | 3002 | 8002 | 9002 | Production | Redis 6379 |
 | snapshot | 3003 | 8003 | 9003 | Production | - |
-| (toolee - reserved) | 3004 | 8004 | 9004 | Not in Claude Desktop | - |
+| tool-registry | 3004 | 8004 | 9004 | Production | - |
 | catasorter | 3005 | 8005 | 9005 | Production | - |
 | looker | - | 8006 | - | Production | - |
 | smart-file-organizer | 3007 | 8007 | 9007 | Production | Redis 6379 |
@@ -32,6 +32,7 @@ PATTERN: Server N uses 300N, 800N, 900N
 | neurogenesis-engine | 3010 | 8010 | 9010 | Production | - |
 | chronos-synapse | - | 8011 | - | HTTP-only | - |
 | trinity-coordinator | 3012 | 8012 | 9012 | Production | - |
+| claude-code-bridge | 3013 | 8013 | 9013 | Production | SQLite |
 | (reserved) | 3014 | 8014 | 9014 | - | - |
 | niws-server | - | 8015 | - | HTTP-only | Notion API |
 | project-context | 3016 | 8016 | 9016 | Production | - |
@@ -40,12 +41,16 @@ PATTERN: Server N uses 300N, 800N, 900N
 | research-bus | - | 8019 | - | HTTP-only | Perplexity API |
 | intelligent-router | 3020 | 8020 | 9020 | Production | Claude API |
 | verifier-mcp | 3021 | 8021 | 9021 | Production | Anthropic API, HuggingFace |
-| safe-batch-processor | 3022 | 8022 | 9022 | Tested (29) | SQLite |
-| intake-guardian | 3023 | 8023 | 9023 | Tested (27) | SQLite, BBB (8008) |
-| health-monitor | 3024 | 8024 | 9024 | Tested (24) | SQLite |
-| synapse-relay | 3025 | 8025 | 9025 | Tested (23) | SQLite |
-| filesystem-guardian | 3026 | 8026 | 9026 | Tested (6) | macOS-native (xattr, mdfind) |
-| consolidation-engine | 3032 | 8032 | 9032 | Tested (217) | SQLite |
+| safe-batch-processor | 3022 | 8022 | 9022 | Production | SQLite |
+| intake-guardian | 3023 | 8023 | 9023 | Production | SQLite, BBB (8008) |
+| health-monitor | 3024 | 8024 | 9024 | Production | SQLite |
+| synapse-relay | 3025 | 8025 | 9025 | Production | SQLite |
+| filesystem-guardian | 3026 | 8026 | 9026 | Production | macOS-native (xattr, mdfind) |
+| consciousness-mcp | 3028 | 8028 | 9028 | Production | SQLite |
+| skill-builder | 3029 | 8029 | 9029 | Production | SQLite |
+| percolation-server | 3030 | 8030 | 9030 | Production | SQLite |
+| experience-layer | 3031 | 8031 | 9031 | Production | SQLite |
+| consolidation-engine | 3032 | 8032 | 9032 | Production | SQLite |
 | filesystem | - | - | - | 3rd party | 3rd party npm |
 
 ---
@@ -251,16 +256,18 @@ PURPOSE: Server discovery, heartbeat, coordination
 HEARTBEAT: Every 30 seconds
 TIMEOUT: 90 seconds (3x heartbeat)
 
-ACTIVE MESH PARTICIPANTS:
+ACTIVE MESH PARTICIPANTS (24):
 - context-guardian (3001)
 - quartermaster (3002)
 - snapshot (3003)
+- tool-registry (3004)
 - catasorter (3005)
 - smart-file-organizer (3007)
 - bonzai-bloat-buster (3008)
 - enterspect (3009)
 - neurogenesis-engine (3010)
 - trinity-coordinator (3012)
+- claude-code-bridge (3013)
 - project-context (3016)
 - knowledge-curator (3017)
 - pk-manager (3018)
@@ -271,6 +278,10 @@ ACTIVE MESH PARTICIPANTS:
 - health-monitor (3024)
 - synapse-relay (3025)
 - filesystem-guardian (3026)
+- consciousness-mcp (3028)
+- skill-builder (3029)
+- percolation-server (3030)
+- experience-layer (3031)
 - consolidation-engine (3032)
 
 HTTP-ONLY SERVERS:
