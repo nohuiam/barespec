@@ -46,6 +46,7 @@ PATTERN: Server N uses 300N, 800N, 900N
 | health-monitor | 3024 | 8024 | 9024 | Production | SQLite |
 | synapse-relay | 3025 | 8025 | 9025 | Production | SQLite |
 | filesystem-guardian | 3026 | 8026 | 9026 | Production | macOS-native (xattr, mdfind) |
+| tenets-server | 3027 | 8027 | 9027 | Production | SQLite |
 | consciousness-mcp | 3028 | 8028 | 9028 | Production | SQLite |
 | skill-builder | 3029 | 8029 | 9029 | Production | SQLite |
 | percolation-server | 3030 | 8030 | 9030 | Production | SQLite |
@@ -221,6 +222,16 @@ WS: 9026 - Filesystem events
 DEPS: macOS-native (xattr CLI, mdfind, fs.watch)
 PURPOSE: Extended attributes, Spotlight search, filesystem monitoring
 
+### tenets-server (3027/8027/9027)
+SOURCE: /repo/tenets-server/config/interlock.json
+UDP: 3027 - InterLock mesh
+HTTP: 8027 - Decision evaluation API, tenet queries
+WS: 9027 - Evaluation events, violation alerts
+DEPS: SQLite (local)
+TESTS: 141 tests
+CATEGORY: Cognitive
+PURPOSE: Ethical decision evaluation against 25 Gospel tenets
+
 ### consolidation-engine (3032/8032/9032)
 SOURCE: /repo/consolidation-engine/config/interlock.json
 UDP: 3032 - InterLock mesh
@@ -256,7 +267,7 @@ PURPOSE: Server discovery, heartbeat, coordination
 HEARTBEAT: Every 30 seconds
 TIMEOUT: 90 seconds (3x heartbeat)
 
-ACTIVE MESH PARTICIPANTS (24):
+ACTIVE MESH PARTICIPANTS (25):
 - context-guardian (3001)
 - quartermaster (3002)
 - snapshot (3003)
@@ -278,6 +289,7 @@ ACTIVE MESH PARTICIPANTS (24):
 - health-monitor (3024)
 - synapse-relay (3025)
 - filesystem-guardian (3026)
+- tenets-server (3027)
 - consciousness-mcp (3028)
 - skill-builder (3029)
 - percolation-server (3030)
