@@ -181,6 +181,41 @@ LAYERS
 
 ---
 
+HTTP REST API (Port 8002)
+
+Base path: /api (NOT /api/v1)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /health | Server health (root level for GMI) |
+| GET | /api/search | FTS5 search with query params |
+| GET | /api/search/live | Real-time filesystem search |
+| GET | /api/search/hybrid | Combined index + live search |
+| GET | /api/files/recent | Recently changed files |
+| GET | /api/files/:id | Get file by ID |
+| POST | /api/files/:id/stale | Mark file as stale |
+| GET | /api/files/approval | Files by approval state |
+| GET | /api/inventory | Directory analysis |
+| GET | /api/audit | Project health audit |
+| GET | /api/duplicates | Find duplicate files |
+| GET | /api/suggest/location | AI file placement suggestions |
+| GET | /api/suggest/scope | Search scope suggestions |
+| POST | /api/inbox | Drop file for processing |
+| GET | /api/inbox/status | Inbox queue status |
+| POST | /api/index/refresh | Manual index refresh |
+| GET | /api/index/stats | Index statistics |
+| GET | /api/watch/status | File watcher status |
+| GET | /api/alerts | System alerts |
+| POST | /api/snapshots | Create filesystem snapshot |
+| GET | /api/snapshots/:id | Get snapshot by ID |
+| GET | /api/reports/daily | Daily activity digest |
+| GET | /api/reports/weekly | Weekly trend report |
+| GET | /api/about | Server info and stats |
+| GET | /api/mesh/peers | InterLock mesh peers |
+| GET | /api/mesh/stats | Mesh statistics |
+
+---
+
 KEY FILES
 
 SOURCE: /repo/Quartermaster/quartermaster/

@@ -85,6 +85,37 @@ SEARCH MODES
 
 ---
 
+HTTP REST API (Port 8009)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /health | Server health check |
+| GET | /stats | Index statistics (files, tokens, memory) |
+| POST | /search | Unified search endpoint |
+| GET | /search/results/:id | Retrieve cached search results |
+| POST | /operations/move | Move file operation |
+| POST | /operations/copy | Copy file operation |
+| POST | /operations/delete | Delete file operation |
+| POST | /operations/rename | Rename file operation |
+| GET | /operations/history | Get operation history |
+| POST | /operations/rollback/:id | Rollback an operation |
+| GET | /spatial/metadata/:path | Get spatial metadata for file |
+| POST | /spatial/metadata | Update spatial metadata |
+| GET | /backups | List available backups |
+
+### POST /search Format
+
+```json
+{
+  "type": "semantic" | "keyword",
+  "query": "string (for semantic)",
+  "keywords": ["array", "for", "keyword"],
+  "options": { "limit": 50, "scope": "all" }
+}
+```
+
+---
+
 KEY FILES
 
 SOURCE: /repo/EnterSpect/
