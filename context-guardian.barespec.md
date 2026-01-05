@@ -23,10 +23,10 @@ TOOLS (14)
 
 TOOL: context_guardian_validate
 INPUT: { operation_type: string (required), context: { path?: string, server?: string, batch_size?: number, reason?: string, session_id?: string } (required), severity?: "low"|"medium"|"high"|"critical" }
-OUTPUT: { approved: boolean, risk_score, warnings: [], recommendations: [], rules_checked: [] }
+OUTPUT: { status: "APPROVED"|"WARNING"|"HARD_BLOCK", confidence: number, reasoning: string, risk_score: number, risk_level: string, matching_rules: [], session_considerations: {}, suggestions: [], validation_id: string, response_time_ms: number }
 USE: Validate single operation against rules, knowledge library, and session state
 EXAMPLE: context_guardian_validate({ operation_type: "file_delete", context: { path: "/important/file.md" }, severity: "high" })
-NOTES: Call before any risky operation. Risk score 0-100. Higher score = higher risk.
+NOTES: Call before any risky operation. Risk score 0-10. Status determines approval: APPROVED=proceed, WARNING=proceed with caution, HARD_BLOCK=stop.
 
 TOOL: context_guardian_validate_batch
 INPUT: { operation_type: string (required), batch_size: number (required), sample_items?: [{ path: string, metadata?: object }], estimated_duration_seconds?: number, resource_requirements?: { memory_mb?: number, disk_mb?: number, cpu_cores?: number }, session_id?: string }
@@ -120,6 +120,32 @@ LAYERS
 2. InterLock UDP mesh (port 3001) - Peer communication
 3. HTTP REST API (port 8001) - External integrations
 4. WebSocket real-time (port 9001) - Live updates
+
+---
+
+HTTP REST API (Port 8001)
+
+Base path: /api/v1
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /health | Server health check |
+| GET | /metrics | Prometheus metrics |
+| POST | /api/v1/validate | Validate operation |
+| POST | /api/v1/validate/batch | Validate batch operation |
+| POST | /api/v1/mistakes | Record mistake |
+| GET | /api/v1/mistakes | List mistakes |
+| GET | /api/v1/session/state | Get session state |
+| GET | /api/v1/knowledge/lookup | Knowledge lookup |
+| POST | /api/v1/rules | Add rule |
+| GET | /api/v1/rules | List rules |
+| GET | /api/v1/guidelines/:operationType | Get guidelines |
+| GET | /api/v1/solutions/search | Search solutions |
+| POST | /api/v1/drift/detect | Detect drift |
+| POST | /api/v1/snapshots | Capture snapshot |
+| GET | /api/v1/validation/history | Validation history |
+| GET | /api/v1/stats | Statistics |
+| GET | /api/v1/dashboard | Dashboard data |
 
 ---
 
