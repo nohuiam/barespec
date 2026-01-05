@@ -2,8 +2,8 @@
 
 **Protocol:** BaNano Binary Format
 **Version:** 1.0 (0x0100)
-**Updated:** 2026-01-04
-**Status:** Standardized across all Cognitive Architecture servers
+**Updated:** 2026-01-05
+**Status:** Dual-protocol decode across all InterLock servers
 
 ---
 
@@ -105,16 +105,105 @@ function decode(buffer: Buffer): Signal | null {
 
 ---
 
+## Dual-Protocol Decode (Jan 2026)
+
+All servers support decoding both binary BaNano format AND legacy text formats:
+
+### Text Format A (compact JSON)
+
+```json
+{"t": 4, "s": "server-name", "d": {...}, "ts": 1704067200000}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| t | number | Signal type (0x04 = HEARTBEAT) |
+| s | string | Sender server ID |
+| d | object | Payload data |
+| ts | number | Timestamp (milliseconds) |
+
+**Used by:** consolidation-engine, intake-guardian, safe-batch-processor
+
+### Text Format B (verbose JSON)
+
+```json
+{"type": 4, "source": "server-name", "payload": {...}, "timestamp": 1704067200000, "nonce": "uuid"}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| type | number/string | Signal type |
+| source | string | Sender server ID |
+| payload | object | Payload data |
+| timestamp | number | Timestamp (milliseconds) |
+| nonce | string | Optional uniqueness token |
+
+**Used by:** filesystem-guardian
+
+### Dual Decode Implementation
+
+```typescript
+function decode(buffer: Buffer): Signal | null {
+  // Try binary BaNano first
+  const binaryResult = decodeBinary(buffer);
+  if (binaryResult) return binaryResult;
+
+  // Fall back to text formats
+  return decodeText(buffer);
+}
+
+function decodeText(buffer: Buffer): Signal | null {
+  try {
+    const str = buffer.toString('utf-8');
+    if (!str.startsWith('{')) return null;
+    const json = JSON.parse(str);
+
+    // Format A: {t, s, d, ts}
+    if ('t' in json && 's' in json) {
+      return {
+        signalType: json.t,
+        version: 0x0100,
+        timestamp: Math.floor((json.ts || Date.now()) / 1000),
+        payload: { sender: json.s, ...json.d }
+      };
+    }
+
+    // Format B: {type, source, payload, timestamp}
+    if ('type' in json && 'source' in json) {
+      return {
+        signalType: typeof json.type === 'number' ? json.type : 0,
+        version: 0x0100,
+        timestamp: Math.floor((json.timestamp || Date.now()) / 1000),
+        payload: { sender: json.source, ...json.payload }
+      };
+    }
+
+    return null;
+  } catch { return null; }
+}
+```
+
+### Sender Normalization
+
+When decoding, servers check multiple fields for sender identification:
+1. `payload.sender` (preferred)
+2. `payload.serverId` (fallback)
+3. `payload.source` (fallback)
+4. `'unknown'` (last resort)
+
+---
+
 ## Standard Signal Types
 
 ### Core Signals (All Servers)
 
 | Signal | Code | Description |
 |--------|------|-------------|
-| HEARTBEAT | 0x00 | Keep-alive ping |
-| ACK | 0x01 | Acknowledgment |
-| DISCOVERY | 0x04 | Peer discovery |
-| DISCOVERY_ACK | 0x05 | Discovery response |
+| DOCK_REQUEST | 0x01 | Request to join mesh |
+| DOCK_APPROVE | 0x02 | Docking approved |
+| DOCK_REJECT | 0x03 | Docking denied |
+| HEARTBEAT | 0x04 | Keep-alive ping |
+| DISCONNECT | 0x05 | Server leaving mesh |
 | SHUTDOWN | 0xFF | Server stopping |
 
 ### Verification Signals (verifier-mcp)
@@ -293,6 +382,7 @@ All 6 Cognitive Architecture servers use identical BaNano protocol:
 
 | Date | Change |
 |------|--------|
+| 2026-01-05 | Added dual-protocol decode (binary + text A/B) to 14 servers. Fixed signal type misalignment (HEARTBEAT 0x01→0x04). Added sender normalization. Mesh: 6→18 active peers. |
 | 2026-01-04 | Standardized all 6 Cognitive servers to BaNano 12-byte header |
 | Pre-2026 | Servers used incompatible formats (JSON, various binary) |
 
