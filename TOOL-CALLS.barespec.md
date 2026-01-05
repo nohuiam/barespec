@@ -1,8 +1,8 @@
 LIBRARY: Server Tool Calls
-VERSION: 1.1
-UPDATED: 2025-12-27
-SERVERS: 21
-TOOLS: 349 total
+VERSION: 1.2
+UPDATED: 2026-01-05
+SERVERS: 32
+TOOLS: 421 total
 PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and usage
 
 ---
@@ -32,6 +32,17 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 | claude-code-bridge | 8 | Bridge | Desktop↔Code work orders |
 | filesystem-test | 12 | Files | CRUD operations |
 | verifier-mcp | 3 | Verification | Claims, fact-check |
+| consciousness-mcp | 10 | Cognitive | Meta-awareness, pattern learning |
+| experience-layer | 6 | Cognitive | Experiential memory, lessons |
+| skill-builder | 8 | Cognitive | SKILL.md management |
+| percolation-server | 8 | Cognitive | Blueprint optimization |
+| tenets-server | 8 | Cognitive | Ethical evaluation |
+| consolidation-engine | 6 | Batch/Merge | Document merging |
+| filesystem-guardian | 6 | Filesystem | macOS xattr, Spotlight |
+| health-monitor | 7 | Health | Ecosystem monitoring |
+| intake-guardian | 5 | Safety | Content admission |
+| safe-batch-processor | 4 | Batch/Merge | Batch operations |
+| synapse-relay | 4 | Health | Signal routing |
 
 ---
 
@@ -726,16 +737,187 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 
 ---
 
+## CONSCIOUSNESS-MCP (10 tools)
+
+**Purpose:** Meta-awareness, pattern learning, ecosystem reflection
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `track_focus` | Log current focus to build attention history | event_type, target, server_name |
+| `get_attention_patterns` | Analyze access patterns - hotspots, trends, anomalies | time_range, pattern_type |
+| `identify_blind_spots` | Find what's NOT being attended to | scope, time_range |
+| `reflect_on_operation` | Analyze operation - what worked, what could be better | operation_type, depth |
+| `analyze_pattern` | Find recurring successes/failures across operations | pattern_query, depth |
+| `audit_reasoning` | Extract assumptions, identify logical gaps | reasoning_text, verify_claims |
+| `predict_outcome` | Predict success/failure from historical patterns | operation_description, context |
+| `synthesize_context` | Integrate multiple sources into unified perspective | sources, question, depth |
+| `suggest_next_action` | Recommend next steps based on patterns | current_context, goals |
+| `get_ecosystem_awareness` | Get real-time state of entire ecosystem | include_history, history_hours |
+
+---
+
+## EXPERIENCE-LAYER (6 tools)
+
+**Purpose:** Experiential memory, PSOM episodes, pattern detection, lessons
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `record_experience` | Store episode with PSOM structure | operation_type, outcome, problem, solution |
+| `recall_by_type` | Get past experiences by operation type | operation_type, outcome_filter, limit |
+| `recall_by_outcome` | Get experiences by outcome | outcome, operation_type, limit |
+| `get_lessons` | Retrieve applicable lessons with confidence | context, operation_type, min_confidence |
+| `apply_lesson` | Mark lesson applied, update confidence | lesson_id, outcome, notes |
+| `learn_from_pattern` | Extract lesson from recurring pattern | pattern_description, episode_ids, lesson_statement |
+
+---
+
+## SKILL-BUILDER (8 tools)
+
+**Purpose:** SKILL.md creation, validation, matching, usage tracking
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `create_skill` | Generate SKILL.md file | name, description, overview, steps |
+| `validate_skill` | Check structure, frontmatter, token counts | skill_path or skill_content |
+| `analyze_description` | Assess description quality | description |
+| `list_skills` | List all indexed skills | status, sort_by, limit |
+| `get_skill` | Get full skill content by ID | skill_id, include_layer3 |
+| `update_skill` | Update existing skill | skill_id, updates |
+| `match_skill` | Find skills matching task description | task_description, min_confidence, limit |
+| `record_skill_usage` | Record skill usage and outcome | skill_id, outcome, context |
+
+---
+
+## PERCOLATION-SERVER (8 tools)
+
+**Purpose:** Blueprint optimization, stress testing, hole detection
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `submit_blueprint` | Submit blueprint for percolation | content, metadata, config |
+| `get_blueprint_status` | Check percolation progress | blueprint_id |
+| `stress_test` | Run stress test on blueprint | blueprint_id, test_type, parameters |
+| `find_holes` | Detect gaps and weaknesses | blueprint_id, analysis_depth |
+| `patch_hole` | Apply fix to detected hole | blueprint_id, hole_id, patch |
+| `research_improvements` | Research optimization opportunities | blueprint_id, focus_areas |
+| `apply_optimization` | Apply optimization to blueprint | blueprint_id, optimization_id |
+| `get_percolation_result` | Get final percolation result | blueprint_id, include_history |
+
+---
+
+## TENETS-SERVER (8 tools)
+
+**Purpose:** Ethical evaluation against 25 Gospel tenets
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `evaluate_decision` | Assess decision against all tenets | decision_text, context, depth |
+| `check_counterfeit` | Check for counterfeit patterns | action_description, claimed_tenet |
+| `identify_blind_spots` | Find ethical gaps in plan | plan_description, stakeholders |
+| `get_tenet` | Get specific tenet details | tenet_number |
+| `list_tenets` | List all 25 tenets | category, include_counterfeits |
+| `get_evaluation_history` | Get past evaluations | filter, limit |
+| `suggest_alternatives` | Suggest ethical alternatives | rejected_action, context |
+| `validate_consistency` | Check consistency across decisions | decision_ids |
+
+---
+
+## CONSOLIDATION-ENGINE (6 tools)
+
+**Purpose:** Document merging, conflict detection, BBB integration
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `create_merge_plan` | Create plan to merge documents | source_files, strategy |
+| `detect_conflicts` | Detect conflicts before merge | file_paths |
+| `merge_documents` | Execute merge with conflict resolution | plan_id, resolution_strategy |
+| `resolve_conflicts` | Manually resolve detected conflicts | conflict_id, resolution |
+| `get_merge_history` | Get history of merge operations | limit, status |
+| `validate_plan` | Validate merge plan before execution | plan_id |
+
+---
+
+## FILESYSTEM-GUARDIAN (6 tools)
+
+**Purpose:** macOS extended attributes, Spotlight integration
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `get_xattr` | Get extended attribute from file | path, attribute_name |
+| `set_xattr` | Set extended attribute on file | path, attribute_name, value |
+| `list_xattr` | List all extended attributes | path |
+| `spotlight_search` | Search using macOS Spotlight mdfind | query, scope, limit |
+| `spotlight_reindex` | Force Spotlight to reindex path | path |
+| `watch_volume` | Monitor volume for filesystem events | volume_path, event_types |
+
+---
+
+## HEALTH-MONITOR (7 tools)
+
+**Purpose:** Ecosystem health monitoring, alerts, metrics
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `check_health` | Check health of specific server | server_name |
+| `get_aggregated_health` | Get aggregated health across servers | include_details |
+| `get_metrics` | Get performance metrics | server_name, time_range |
+| `get_server_status` | Get current status of server | server_name |
+| `get_server_history` | Get historical health data | server_name, hours |
+| `subscribe_to_alerts` | Subscribe to health alerts | alert_types, callback |
+| `acknowledge_alert` | Acknowledge and dismiss alert | alert_id, notes |
+
+---
+
+## INTAKE-GUARDIAN (5 tools)
+
+**Purpose:** Content admission, validation, gatekeeper
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `check_content` | Check content against admission criteria | content, content_type |
+| `check_file` | Check file for admission eligibility | file_path |
+| `admit_content` | Admit content after validation | content_id, destination |
+| `configure_thresholds` | Configure admission thresholds | threshold_type, value |
+| `get_intake_history` | Get history of intake decisions | filter, limit |
+
+---
+
+## SAFE-BATCH-PROCESSOR (4 tools)
+
+**Purpose:** Batch operations with rollback capability
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `execute_batch` | Execute batch with rollback capability | operations, dry_run |
+| `get_batch_status` | Get status of batch operation | batch_id |
+| `rollback_batch` | Rollback completed batch | batch_id, confirm |
+| `validate_batch` | Validate batch before execution | operations |
+
+---
+
+## SYNAPSE-RELAY (4 tools)
+
+**Purpose:** InterLock signal routing, buffering
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `relay_signal` | Relay signal to specified targets | signal, targets |
+| `buffer_signals` | Buffer signals for batch delivery | signals, delay_ms |
+| `get_relay_stats` | Get relay statistics and throughput | time_range |
+| `configure_relay` | Configure relay routing rules | rules |
+
+---
+
 ## TOOL COUNT BY CATEGORY
 
 | Category | Servers | Tools |
 |----------|---------|-------|
 | Files/Search | 4 | 46 |
 | Classification | 2 | 9 |
-| Safety | 2 | 19 |
+| Safety | 4 | 28 |
 | Research | 3 | 20 |
 | Temporal | 1 | 19 |
-| Orchestration | 2 | 16 |
+| Orchestration | 3 | 20 |
 | Meta/Generation | 1 | 26 |
 | Meta/Registry | 1 | 65 |
 | Knowledge | 2 | 10 |
@@ -744,6 +926,10 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 | Routing | 1 | 2 |
 | Bridge | 1 | 8 |
 | Backup | 1 | 6 |
+| Cognitive | 5 | 40 |
+| Batch/Merge | 2 | 10 |
+| Filesystem | 1 | 6 |
+| Health | 2 | 11 |
 
 ---
 
