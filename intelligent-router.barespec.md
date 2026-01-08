@@ -1,6 +1,6 @@
 SERVER: intelligent-router
-VERSION: 1.2
-UPDATED: 2025-12-30
+VERSION: 1.0.0
+UPDATED: 2026-01-07
 STATUS: Production
 PORT: 3020 (UDP/InterLock), 8020 (HTTP), 9020 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -157,4 +157,12 @@ HTTP: src/http/server.ts
 WEBSOCKET: src/websocket/server.ts
 TESTS: tests/http.test.ts, tests/websocket.test.ts
 
-DEPENDENCIES: @modelcontextprotocol/sdk, better-sqlite3, express, ws, cors, uuid, zod
+DEPENDENCIES: @modelcontextprotocol/sdk, better-sqlite3, express, express-rate-limit, ws, cors, uuid, zod
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8012)
+RATE_LIMITING: Tiered limits - General: 100/min, Routing: 30/min
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7 standard)

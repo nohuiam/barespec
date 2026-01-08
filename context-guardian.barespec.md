@@ -1,6 +1,6 @@
 SERVER: context-guardian
 VERSION: 2.0
-UPDATED: 2025-12-26
+UPDATED: 2026-01-07
 STATUS: Production
 PORT: 3001 (UDP/InterLock), 8001 (HTTP), 9001 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -174,4 +174,12 @@ VAULT: src/vault/redis-vault.js
 DATABASE: src/database/client.js, schema.js
 CONFIG: config/server.json, config/interlock.json
 
-DEPENDENCIES: better-sqlite3, @modelcontextprotocol/sdk, express, ws, zod, redis (optional)
+DEPENDENCIES: better-sqlite3, @modelcontextprotocol/sdk, express, express-rate-limit, ws, zod, redis (optional)
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8012)
+RATE_LIMITING: Tiered limits - General: 100/min, Validate: 50/min, Mutations: 20/min
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7 standard)

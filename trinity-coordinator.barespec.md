@@ -1,6 +1,6 @@
 SERVER: trinity-coordinator
-VERSION: 1.0
-UPDATED: 2025-12-26
+VERSION: 0.2.0
+UPDATED: 2026-01-07
 STATUS: Production
 PORT: 3012 (UDP/InterLock), 8012 (HTTP), 9012 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -113,8 +113,41 @@ TRINITY MEMBERS
 
 ---
 
+HTTP REST API (Port 8012)
+
+Base path: /api/v1
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /health | Server health check |
+| GET | /api/v1/services | List active services |
+| GET | /api/v1/workflows | List workflows |
+| GET | /api/v1/workflows/:id | Get workflow by ID |
+| POST | /api/v1/orchestrate | Route task to Trinity member |
+| POST | /api/v1/execute-workflow | Execute a workflow |
+| GET | /api/v1/routing/history | Routing history |
+| GET | /api/v1/work-orders | List work orders |
+| GET | /api/v1/work-orders/:id | Get work order by ID |
+| GET | /api/v1/stats | Service statistics |
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8012)
+RATE_LIMITING: Tiered limits - General: 100/min, Orchestrate: 30/min, Workflow: 10/min
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7 standard)
+
+---
+
 KEY FILES
 
 SOURCE: /repo/trinitycoordinator/
-INDEX: src/index.ts (or .js)
+INDEX: src/index.ts
+HTTP: src/http/server.ts
+WEBSOCKET: src/websocket/server.ts
+INTERLOCK: src/interlock/socket.ts, protocol.ts, handlers.ts
+TESTS: tests/http.test.ts
 COORDINATION: .claude-coordination/ (work orders folder)
+
+DEPENDENCIES: @modelcontextprotocol/sdk, better-sqlite3, express, express-rate-limit, ws, zod
