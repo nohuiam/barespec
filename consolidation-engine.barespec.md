@@ -1,14 +1,14 @@
 SERVER: consolidation-engine
 VERSION: 1.0.0
-UPDATED: 2026-01-02
-STATUS: Tested (217 tests, 89% coverage)
+UPDATED: 2026-01-08
+STATUS: Tested (220 tests, all passing)
 PORT: 3032 (UDP/InterLock), 8032 (HTTP), 9032 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
-DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk
+DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk, cors, express-rate-limit
 PURPOSE: Document consolidation and merge operations using BBB redundancy analysis
 CONFIG: /repo/consolidation-engine/config/interlock.json
 REPO: https://github.com/nohuiam/consolidation-engine
-TESTS: 217 (MCP 65, Core 51, Database 20, HTTP 17, WebSocket 9, InterLock 36, Integration 6)
+TESTS: 220 total (all passing)
 
 ---
 
@@ -174,7 +174,18 @@ CI/CD
 
 - GitHub Actions CI pipeline
 - Tested on Node 18.x, 20.x, 22.x
-- All 217 tests passing
+- All 220 tests passing
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8032)
+RATE_LIMITS:
+- General: 100 requests/minute
+- Merge: 20 requests/minute (conservative for file ops)
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7)
+AUDIT: Linus audit completed 2026-01-08 (Instance 8)
 
 ---
 
@@ -184,5 +195,5 @@ NOTES
 2. Three merge strategies: aggressive, conservative, interactive
 3. Full conflict detection before merge execution
 4. Automatic backup via snapshot (3003) integration
-5. 89% code coverage with 217 automated tests
+5. 89% code coverage with 220 automated tests
 6. CI/CD pipeline on GitHub Actions
