@@ -1,6 +1,6 @@
 REGISTRY: BOP Servers Port Allocation
-VERSION: 2.2
-UPDATED: 2026-01-03
+VERSION: 2.4
+UPDATED: 2026-01-09
 AUDITED: Source code audit (not documentation)
 
 ---
@@ -34,7 +34,11 @@ PATTERN: Server N uses 300N, 800N, 900N
 | trinity-coordinator | 3012 | 8012 | 9012 | Production | - |
 | claude-code-bridge | 3013 | 8013 | 9013 | Production | SQLite |
 | (reserved) | 3014 | 8014 | 9014 | - | - |
-| niws-server | - | 8015 | - | HTTP-only | Notion API |
+| niws-server | - | 8015 | - | DEPRECATED | Replaced by niws-* |
+| niws-intake | 3033 | 8033 | 9033 | Production | SQLite |
+| niws-analysis | 3034 | 8034 | 9034 | Production | SQLite |
+| niws-production | 3035 | 8035 | 9035 | Production | SQLite |
+| niws-delivery | 3036 | 8036 | 9036 | Production | niws-*, research-bus |
 | project-context | 3016 | 8016 | 9016 | Production | - |
 | knowledge-curator | 3017 | 8017 | 9017 | Production | - |
 | pk-manager | 3018 | 8018 | 9018 | Production | - |
@@ -52,6 +56,7 @@ PATTERN: Server N uses 300N, 800N, 900N
 | percolation-server | 3030 | 8030 | 9030 | Production | SQLite |
 | experience-layer | 3031 | 8031 | 9031 | Production | SQLite |
 | consolidation-engine | 3032 | 8032 | 9032 | Production | SQLite |
+| linus-inspector | 3037 | 8037 | 9037 | Production | SQLite |
 | filesystem | - | - | - | 3rd party | 3rd party npm |
 
 ---
@@ -138,12 +143,45 @@ HTTP: 8012 - Coordination status
 WS: 9012 - Handoff notifications
 ENV: TRINITY_HTTP_PORT, TRINITY_INTERLOCK_PORT, TRINITY_WEBSOCKET_PORT
 
-### niws-server (8015)
+### niws-server (8015) - DEPRECATED
 SOURCE: /repo/niws-server/src/config.ts:74
 UDP: None
 HTTP: 8015 - Admin/production status
 WS: None
 DEPS: Notion API
+STATUS: DEPRECATED - replaced by niws-intake, niws-analysis, niws-production, niws-delivery
+
+### niws-intake (3033/8033/9033)
+SOURCE: /repo/niws-intake/config/interlock.json
+UDP: 3033 - InterLock mesh
+HTTP: 8033 - Outlets API, articles API, stories API
+WS: 9033 - Feed update events
+DEPS: SQLite (articles.sqlite, outlets.sqlite)
+TOOLS: 31 (RSS feeds, article ingestion, story clustering)
+
+### niws-analysis (3034/8034/9034)
+SOURCE: /repo/niws-analysis/config/interlock.json
+UDP: 3034 - InterLock mesh
+HTTP: 8034 - Analyses API, compare API
+WS: 9034 - Analysis completion events
+DEPS: SQLite (analyses.sqlite), niws-intake (8033)
+TOOLS: 11 (bias detection, framing comparison, neutral alternatives)
+
+### niws-production (3035/8035/9035)
+SOURCE: /repo/niws-production/config/interlock.json
+UDP: 3035 - InterLock mesh
+HTTP: 8035 - Scripts API, briefs API, Christ-Oh-Meter API
+WS: 9035 - Script generation events
+DEPS: SQLite (scripts.sqlite, briefs.sqlite), niws-intake, niws-analysis, research-bus
+TOOLS: 28 (script generation, story briefs, moral ratings)
+
+### niws-delivery (3036/8036/9036)
+SOURCE: /repo/niws-delivery/config/interlock.json
+UDP: 3036 - InterLock mesh
+HTTP: 8036 - Export API, workflow API, video API
+WS: 9036 - Workflow progress events
+DEPS: niws-intake, niws-analysis, niws-production (all other NIWS servers)
+TOOLS: 48 (export, Notion integration, video production, workflow orchestration)
 
 ### project-context (3016/8016/9016)
 SOURCE: /repo/project-context/config/interlock.json
@@ -242,6 +280,17 @@ TESTS: 217 (89% statement coverage, 76% branch coverage)
 CI: GitHub Actions (Node 18/20/22)
 REPO: https://github.com/nohuiam/consolidation-engine
 
+### linus-inspector (3037/8037/9037)
+SOURCE: /repo/linus-inspector/config/interlock.json
+UDP: 3037 - InterLock mesh
+HTTP: 8037 - Inspection API, vendor configs, compliance rules
+WS: 9037 - Inspection progress events
+DEPS: SQLite (local)
+TESTS: 115
+TOOLS: 26 (inspection suite + self-inspection)
+CATEGORY: Quality Gate
+PURPOSE: Brutal quality gate for neurogenesis-generated servers. "Physician heal thyself."
+
 ### filesystem (stdio only)
 SOURCE: npm @modelcontextprotocol/server-filesystem
 UDP: None
@@ -257,6 +306,8 @@ WS: None
 | Redis | 6379 | Shared memory vault | context-guardian, quartermaster, smart-file-organizer |
 | Qdrant | 6333 | Vector embeddings DB | bonzai-bloat-buster |
 | Comet CDP | 9222 | Browser automation | research-bus (optional) |
+| GMI Control API | 3099 | Tool state, refresh rate | bop-gmi dashboard |
+| GMI Frontend | 5173 | Vite dev server | bop-gmi dashboard |
 
 ---
 
@@ -267,7 +318,7 @@ PURPOSE: Server discovery, heartbeat, coordination
 HEARTBEAT: Every 30 seconds
 TIMEOUT: 90 seconds (3x heartbeat)
 
-ACTIVE MESH PARTICIPANTS (25):
+ACTIVE MESH PARTICIPANTS (29):
 - context-guardian (3001)
 - quartermaster (3002)
 - snapshot (3003)
@@ -295,11 +346,16 @@ ACTIVE MESH PARTICIPANTS (25):
 - percolation-server (3030)
 - experience-layer (3031)
 - consolidation-engine (3032)
+- niws-intake (3033)
+- niws-analysis (3034)
+- niws-production (3035)
+- niws-delivery (3036)
+- linus-inspector (3037)
 
 HTTP-ONLY SERVERS:
 - looker (8006)
 - chronos-synapse (8011)
-- niws-server (8015)
+- niws-server (8015) - DEPRECATED
 - research-bus (8019)
 
 3RD PARTY (Cannot modify):
