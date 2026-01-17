@@ -1,6 +1,6 @@
 SERVER: niws-intake
-VERSION: 1.0
-UPDATED: 2026-01-10
+VERSION: 1.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORTS: UDP 3033 | HTTP 8033 | WS 9033
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -150,6 +150,8 @@ COLUMNS: id, article_id, bill_id, confidence, link_type, extracted_quote, create
 
 HTTP ENDPOINTS
 
+GET /api/tools - List all MCP tools (Gateway integration)
+POST /api/tools/:toolName - Execute MCP tool (Gateway integration)
 GET /api/health - Health check
 GET /api/status - Server status with stats
 GET /api/outlets - List outlets

@@ -1,6 +1,6 @@
 SERVER: niws-analysis
-VERSION: 1.0
-UPDATED: 2026-01-10
+VERSION: 1.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORTS: UDP 3034 | HTTP 8034 | WS 9034
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -94,6 +94,8 @@ COLUMNS: id, word, category, lean, severity, alternatives, created_at
 
 HTTP ENDPOINTS
 
+GET /api/tools - List all MCP tools (Gateway integration)
+POST /api/tools/:toolName - Execute MCP tool (Gateway integration)
 GET /api/health - Health check (supports deep=true query param)
 GET /metrics - Prometheus metrics (optional auth via METRICS_AUTH_TOKEN)
 GET /api/analyses - List analyses with filters (articleId, type, status, limit, offset)

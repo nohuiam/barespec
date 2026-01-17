@@ -1,6 +1,6 @@
 SERVER: niws-production
-VERSION: 1.0
-UPDATED: 2026-01-10
+VERSION: 1.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORTS: UDP 3035 | HTTP 8035 | WS 9035
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -157,6 +157,8 @@ COLUMNS: id, brief_id, action, subject, affected, context, spectrum_score, verdi
 
 HTTP ENDPOINTS
 
+GET /api/tools - List all MCP tools (Gateway integration)
+POST /api/tools/:toolName - Execute MCP tool (Gateway integration)
 GET /api/health - Health check
 GET /api/status - Server status with dependency health
 
