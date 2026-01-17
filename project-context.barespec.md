@@ -1,6 +1,6 @@
 SERVER: project-context
-VERSION: 1.3
-UPDATED: 2025-12-30
+VERSION: 1.4
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3016 (UDP/InterLock), 8016 (HTTP), 9016 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -109,6 +109,15 @@ USE: Check and record operation against rate limits
 ENDPOINT: GET /api/v1/rate-limits/stats
 OUTPUT: { success: boolean, stats: object, costTracking: object, timestamp: string }
 USE: Get rate limit statistics
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } or direct args object
+OUTPUT: { success: boolean, result: object } or { success: false, error: string }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 

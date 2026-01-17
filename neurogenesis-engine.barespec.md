@@ -1,6 +1,6 @@
 SERVER: neurogenesis-engine
-VERSION: 2.0
-UPDATED: 2025-12-26
+VERSION: 2.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3010 (UDP/InterLock), 8010 (HTTP), 9010 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -117,6 +117,23 @@ LAYERS
 2. InterLock UDP mesh (port 3010) - Peer communication
 3. HTTP REST API (port 8010) - External integrations
 4. WebSocket real-time (port 9010) - Live updates
+
+---
+
+HTTP REST API (port 8010)
+
+ENDPOINT: GET /health
+OUTPUT: { status, server, version, uptime }
+USE: Health check
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } or direct args object
+OUTPUT: { success: boolean, result: object } or { success: false, error: string }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 

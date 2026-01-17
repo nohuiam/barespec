@@ -1,6 +1,6 @@
 SERVER: claude-code-bridge
-VERSION: 0.1.0
-UPDATED: 2025-12-27
+VERSION: 0.1.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3013 (UDP/InterLock), 8013 (HTTP), 9013 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -80,6 +80,23 @@ LAYERS
 2. InterLock UDP mesh (port 3013) - Peer communication
 3. HTTP REST API (port 8013) - External integrations
 4. WebSocket real-time (port 9013) - Live updates
+
+---
+
+HTTP REST API (port 8013)
+
+ENDPOINT: GET /health
+OUTPUT: { status, server, uptime }
+USE: Health check
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } or direct args object
+OUTPUT: { success: boolean, result: object } or { success: false, error: string }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 

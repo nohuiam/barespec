@@ -1,6 +1,6 @@
 SERVER: trinity-coordinator
-VERSION: 0.2.0
-UPDATED: 2026-01-07
+VERSION: 0.2.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3012 (UDP/InterLock), 8012 (HTTP), 9012 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -129,6 +129,8 @@ Base path: /api/v1
 | GET | /api/v1/work-orders | List work orders |
 | GET | /api/v1/work-orders/:id | Get work order by ID |
 | GET | /api/v1/stats | Service statistics |
+| GET | /api/tools | List MCP tools for bop-gateway |
+| POST | /api/tools/:toolName | Execute MCP tool via HTTP |
 
 ---
 

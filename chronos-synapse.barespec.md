@@ -1,6 +1,6 @@
 SERVER: chronos-synapse
-VERSION: 2.0
-UPDATED: 2025-12-26
+VERSION: 2.1
+UPDATED: 2026-01-17
 STATUS: Production (All 5 phases implemented)
 PORT: 8011 (HTTP only)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -78,6 +78,27 @@ OPTIMIZATION (4):
 
 ENTITY TYPES: project, file, server, error, process, metric, ecosystem
 EVENT TYPES: created, modified, deleted, error, recovered, validated, deployed
+
+---
+
+HTTP REST API (port 8011)
+
+ENDPOINT: GET /health
+OUTPUT: { status, server, uptime }
+USE: Health check
+
+ENDPOINT: GET /api/stats
+OUTPUT: { stats: object }
+USE: Performance statistics
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } or direct args object
+OUTPUT: { success: boolean, result: object } or { success: false, error: string }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 

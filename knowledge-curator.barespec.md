@@ -1,6 +1,6 @@
 SERVER: knowledge-curator
-VERSION: 1.3
-UPDATED: 2025-12-30
+VERSION: 1.4
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3017 (UDP/InterLock), 8017 (HTTP), 9017 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -47,6 +47,15 @@ ENDPOINT: GET /api/v1/graph/:id
 PARAMS: ?depth=2&types=cites,extends
 OUTPUT: { success: boolean, startNode: string, depth: number, nodes: array, edges: array }
 USE: Query knowledge graph relationships
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } or direct args object
+OUTPUT: { success: boolean, result: object } or { success: false, error: string }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 
