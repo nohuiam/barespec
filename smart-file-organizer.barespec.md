@@ -1,6 +1,6 @@
 SERVER: smart-file-organizer
-VERSION: 2.2
-UPDATED: 2025-12-30
+VERSION: 2.2.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3007 (UDP/InterLock), 8007 (HTTP), 9007 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -16,6 +16,7 @@ CLASSIFICATION: Heuristic (fast, local) or CataSORTER integration
 SAFETY: Dry run option, full rollback support, operation tracking
 INTERLOCK: UDP mesh (graceful degradation - server continues if InterLock fails), SharedMemoryVault (Redis), Tumbler signal filtering
 DATABASE: SQLite (better-sqlite3), __dirname-based paths for Claude Desktop compatibility
+SCHEMA: src/database/schema.sql - movements, rules, templates, review_queue tables with views and triggers
 
 ---
 
@@ -169,3 +170,13 @@ CONFIG: config/tumbler.json
 TESTS: tests/http.test.js, tests/websocket.test.js
 
 DEPENDENCIES: @modelcontextprotocol/sdk, better-sqlite3, ioredis, express, ws, cors, chokidar, winston, zod
+
+---
+
+BUGFIXES
+
+v2.2.1 (2026-01-17):
+- Fixed SQLite schema syntax error causing "no such table: movements" (BUG-002)
+- Moved INDEX declarations from inside CREATE TABLE to separate CREATE INDEX IF NOT EXISTS statements
+- Affected tables: movements, rules, templates, review_queue
+- Database reinitialization required after fix

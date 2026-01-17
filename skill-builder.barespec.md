@@ -2,8 +2,8 @@
 
 ## Server Identity
 - **Name:** skill-builder
-- **Version:** 1.1.0
-- **Updated:** 2026-01-16
+- **Version:** 1.1.1
+- **Updated:** 2026-01-17
 - **Port Pattern:** 3029 (UDP) / 8029 (HTTP) / 9029 (WebSocket)
 - **Path:** `/repo/skill-builder/`
 
@@ -73,7 +73,7 @@ SKILL_CONFIG = {
   LAYER2_MAX_TOKENS: 5000,
   MIN_DESCRIPTION_LENGTH: 20,
   MAX_DESCRIPTION_LENGTH: 500,
-  MIN_MATCH_CONFIDENCE: 0.3,
+  MIN_MATCH_CONFIDENCE: 0.05,  // Lowered from 0.3 to support short queries (v1.1.1)
   HIGH_MATCH_CONFIDENCE: 0.7
 }
 ```
@@ -611,3 +611,11 @@ Key concepts incorporated:
 2. Semantic Matching: Description-based skill discovery
 3. Token Budgets: Layer 1 ~100, Layer 2 <5000
 4. Usage Tracking: Success rate and confidence updates
+
+## Bugfixes
+
+### v1.1.1 (2026-01-17)
+- Fixed match_skill returning empty results for short queries (BUG-003)
+- Lowered MIN_MATCH_CONFIDENCE from 0.3 to 0.05
+- Root cause: Jaccard similarity produces low scores for short queries vs long descriptions
+- Short queries like "research" now return matches with ~0.09 confidence

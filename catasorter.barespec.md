@@ -1,6 +1,6 @@
 SERVER: catasorter
-VERSION: 2.1
-UPDATED: 2026-01-16
+VERSION: 2.1.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3005 (UDP/InterLock), 8005 (HTTP), 9005 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -174,4 +174,13 @@ SCRIPTS:
 MIGRATIONS:
 - migrations/004_unify_nugget_types.sql: Unified nugget types (added reference, tutorial)
 
-DEPENDENCIES: @modelcontextprotocol/sdk, @anthropic-ai/sdk, better-sqlite3, zod, dotenv, express, ws, axios
+DEPENDENCIES: @modelcontextprotocol/sdk, @anthropic-ai/sdk, better-sqlite3, zod, zod-to-json-schema, dotenv, express, ws, axios
+
+---
+
+BUGFIXES
+
+v2.1.1 (2026-01-17):
+- Fixed /api/tools endpoint returning empty tool names (BUG-001)
+- Added zod-to-json-schema for proper JSON Schema conversion in gateway /api/tools response
+- Object.values() → Object.entries() to preserve tool names in HTTP handler
