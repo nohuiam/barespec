@@ -1,8 +1,8 @@
 # Tenets Server Barespec
 
 **Server:** tenets-server
-**Version:** 1.1.0
-**Updated:** 2026-01-06
+**Version:** 1.2.0
+**Updated:** 2026-01-17
 **Port Assignment:** MCP stdio | UDP 3027 | HTTP 8027 | WS 9027
 **Purpose:** Ethical decision evaluation against 25 Gospel tenets with Evil opposites for spectrum scoring
 
@@ -336,6 +336,8 @@ tenet_score = base(0.5)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| GET | /api/tools | List all MCP tools (Gateway integration) |
+| POST | /api/tools/:toolName | Execute MCP tool (Gateway integration) |
 | GET | /health | Server health check |
 | GET | /api/stats | Evaluation statistics |
 | GET | /api/tenets | List all tenets |
