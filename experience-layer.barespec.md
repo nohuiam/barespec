@@ -2,7 +2,8 @@
 
 ## Server Identity
 - **Name:** experience-layer
-- **Version:** 1.0.0
+- **Version:** 1.1.0
+- **Updated:** 2026-01-16
 - **Port Pattern:** 3031 (UDP) / 8031 (HTTP) / 9031 (WebSocket)
 - **Path:** `/repo/experience-layer/`
 
@@ -267,6 +268,8 @@ CREATE TABLE lessons (
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Server health with stats |
+| GET | `/api/tools` | List all MCP tools (Gateway integration) |
+| POST | `/api/tools/:toolName` | Execute MCP tool (Gateway integration) |
 | GET | `/api/stats` | Episode/pattern/lesson counts |
 | GET | `/api/episodes` | Recent episodes (paginated) |
 | GET | `/api/episodes/type/:type` | Episodes by operation type |

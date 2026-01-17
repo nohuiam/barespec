@@ -1,6 +1,6 @@
 SERVER: bonzai-bloat-buster
 VERSION: 3.2
-UPDATED: 2025-12-30
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3008 (UDP/InterLock), 8008 (HTTP), 9008 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -80,6 +80,14 @@ HTTP REST API (port 8008)
 ENDPOINT: GET /health
 OUTPUT: { status: string, server: string, version: string, uptime: object, ports: object, qdrant: object, timestamp: string }
 USE: Health check with Qdrant status
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [], count: number }
+USE: List all MCP tools (Gateway integration)
+
+ENDPOINT: POST /api/tools/:toolName
+OUTPUT: { success: boolean, result: object }
+USE: Execute MCP tool by name (Gateway integration)
 
 ENDPOINT: GET /stats
 OUTPUT: { success: boolean, stats: { qdrant: object, cache: object }, timestamp: string }

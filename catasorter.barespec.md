@@ -1,11 +1,13 @@
 SERVER: catasorter
-VERSION: 2.0
-UPDATED: 2025-12-26
+VERSION: 2.1
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3005 (UDP/InterLock), 8005 (HTTP), 9005 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
 PURPOSE: GLEC document classification and knowledge organization
 CONFIG: /repo/Catasorter/config/interlock.json
+
+v2.1 CHANGES: Rate limiting (token bucket + circuit breaker), parallel batch processing, web classification tools
 
 ---
 
@@ -15,11 +17,13 @@ CLASSIFICATION: GLEC framework (Genesis, Leviticus, Exodus, Context)
 DEWEY: Hierarchical ID system for document tracking
 NUGGETS: Gold nugget extraction for key insights
 DATABASE: SQLite (better-sqlite3)
-LAYERS: MCP stdio (6 tools), InterLock UDP mesh, HTTP REST, WebSocket events
+LAYERS: MCP stdio (12 tools), InterLock UDP mesh, HTTP REST, WebSocket events
+RATE-LIMITING: Token bucket + circuit breaker per API (Claude, Perplexity, Ollama)
+RETRY: Exponential backoff with jitter, configurable max retries
 
 ---
 
-TOOLS (6)
+TOOLS (12) - 6 file classification + 6 web classification
 
 TOOL: classify_document
 INPUT: { file_path: string (required), extract_nuggets?: boolean (default: true), user_hint?: string }
@@ -57,11 +61,57 @@ EXAMPLE: organize_document({ file_path: "/Dropository/doc.md", dry_run: true })
 NOTES: Creates destination folder if needed. ALWAYS dry_run first.
 
 TOOL: batch_process
-INPUT: { max_files?: number (default: 10), dry_run?: boolean (default: false), extract_nuggets?: boolean (default: true) }
-OUTPUT: { success: boolean, operation, files_discovered, files_processed, files_failed, results: [] }
-USE: Batch process documents from Dropository
-EXAMPLE: batch_process({ max_files: 25, dry_run: true })
-NOTES: Processes markdown and text files. Results include per-file success/error.
+INPUT: { max_files?: number (default: 10), dry_run?: boolean (default: false), extract_nuggets?: boolean (default: true), parallel_limit?: number (default: 5, max: 10) }
+OUTPUT: { success: boolean, operation, files_discovered, files_processed, files_failed, parallel_limit, results: [] }
+USE: Batch process documents from Dropository with parallel execution
+EXAMPLE: batch_process({ max_files: 25, parallel_limit: 5, dry_run: true })
+NOTES: Processes markdown and text files in parallel batches. Rate limiting prevents API overload.
+
+---
+
+WEB CLASSIFICATION TOOLS (6)
+
+TOOL: classify_url
+INPUT: { url: string (required), extract_nuggets?: boolean (default: true), mode?: string (default: "bop") }
+OUTPUT: { url, domain, web_dewey_id, classification: { primary_category, subject, glec, confidence }, credibility, reliability, action_category, gold_nuggets: [], implementation_notes, pricing_info }
+USE: Classify a web URL and extract nuggets
+EXAMPLE: classify_url({ url: "https://arxiv.org/abs/2405.00732", mode: "bop" })
+NOTES: Modes: "bop" (Box of Prompts focus), "niws" (news analysis with Christ-Oh-Meter), "default"
+
+TOOL: get_web_classification
+INPUT: { url: string (required) }
+OUTPUT: { url, domain, web_dewey_id, classification, credibility, classified_at }
+USE: Get classification for a previously classified URL
+EXAMPLE: get_web_classification({ url: "https://example.com/article" })
+NOTES: Returns null if URL not in database.
+
+TOOL: get_domain_info
+INPUT: { domain: string (required) }
+OUTPUT: { domain, total_urls, classifications: [], average_credibility }
+USE: Get all classifications for a specific domain
+EXAMPLE: get_domain_info({ domain: "arxiv.org" })
+NOTES: Useful for domain-level analysis.
+
+TOOL: get_web_stats
+INPUT: {}
+OUTPUT: { total_urls, by_domain: {}, by_category: {}, average_credibility }
+USE: Get web classification statistics
+EXAMPLE: get_web_stats({})
+NOTES: Overview of all web classifications.
+
+TOOL: batch_classify_urls
+INPUT: { urls: string[] (required), extract_nuggets?: boolean (default: true), mode?: string (default: "bop") }
+OUTPUT: { success: boolean, total, processed, failed, results: [] }
+USE: Batch classify multiple URLs
+EXAMPLE: batch_classify_urls({ urls: ["https://a.com", "https://b.com"], mode: "bop" })
+NOTES: Processes URLs with rate limiting. Results include per-URL success/error.
+
+TOOL: discover_urls
+INPUT: { source: string (required), max_urls?: number (default: 10) }
+OUTPUT: { source, urls_discovered, urls: [] }
+USE: Discover URLs from a source (file, webpage, or text)
+EXAMPLE: discover_urls({ source: "/path/to/urls.txt", max_urls: 50 })
+NOTES: Extracts URLs from markdown links, plain text, or HTML.
 
 ---
 
@@ -76,6 +126,17 @@ DEWEY FORMAT: {G|L|E|C}_{Subject}_{###} (e.g., G_Architecture_001)
 
 ---
 
+HTTP REST API (Port 8005)
+
+GET  /health                    → { status, server, version, uptime, database, timestamp }
+GET  /api/tools                 → { tools: [], count: number } (Gateway integration)
+POST /api/tools/:toolName       → { success: boolean, result: object } (Gateway integration)
+GET  /stats                     → Classification statistics
+GET  /api/classifications       → List classifications
+POST /api/classify              → Classify document
+
+---
+
 INTERLOCK SIGNALS
 
 Emits: CLASSIFICATION_COMPLETE (0x51)
@@ -87,14 +148,30 @@ KEY FILES
 
 SOURCE: /repo/Catasorter/
 INDEX: src/index.js
-TOOLS: src/tools/index.js, src/tools/classify-document.js
-CLASSIFICATION: src/classification/glec-classifier.js
+TOOLS: src/tools/index.js, src/tools/classify-document.js, src/tools/web-tools.js
+CLASSIFICATION: src/classification/glec-classifier.js, src/classification/web-classifier.js
 NAMING: src/naming/dewey-generator.js, src/naming/filename-builder.js
 PK-INTEGRATION: src/pk-integration/nugget-extractor.js
+COGNITIVE: src/cognitive/tenets-integration.js (Christ-Oh-Meter for NIWS mode)
 INTERLOCK: src/interlock/socket.js, src/interlock/tumbler.js
 HTTP: src/http/server.js
 WEBSOCKET: src/websocket/server.js
 DATABASE: src/database/client.js
 CONFIG: config/server.json, config/interlock.json
 
-DEPENDENCIES: @modelcontextprotocol/sdk, better-sqlite3, zod, dotenv, express, ws
+UTILITIES (v2.1):
+- src/utils/rate-limiter.js: Token bucket + circuit breaker (CLOSED/OPEN/HALF_OPEN states)
+- src/utils/api-limiters.js: Per-API instances (claude, perplexity, ollama, tenets, experience)
+- src/utils/retry.js: Exponential backoff with jitter, rate limiter integration
+- src/utils/logger.js: Structured logging with JSON output
+- src/constants/nugget-types.js: Single source of truth for nugget types
+
+SCRIPTS:
+- scripts/batch-extract.sh: Parallel URL extraction (xargs -P)
+  Usage: echo "url1\nurl2" | PARALLEL=5 MODE=bop ./batch-extract.sh
+  Env: PARALLEL (default: 5), SERVER (default: http://localhost:8005), MODE (bop/niws/default)
+
+MIGRATIONS:
+- migrations/004_unify_nugget_types.sql: Unified nugget types (added reference, tutorial)
+
+DEPENDENCIES: @modelcontextprotocol/sdk, @anthropic-ai/sdk, better-sqlite3, zod, dotenv, express, ws, axios

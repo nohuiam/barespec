@@ -1,13 +1,13 @@
 SERVER: health-monitor
 VERSION: 1.0.0
-UPDATED: 2026-01-02
-STATUS: Tested (24 tests passed)
+UPDATED: 2026-01-08
+STATUS: Tested (10 HTTP tests passed)
 PORT: 3024 (UDP/InterLock), 8024 (HTTP), 9024 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
-DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk
+DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk, cors, express-rate-limit
 PURPOSE: Ecosystem health monitoring with alerts, metrics, and predictive failure analysis
 CONFIG: /repo/health-monitor/config/interlock.json
-TESTS: 24 (startup, HTTP, health monitoring, alerts, websocket, error handling)
+TESTS: 10 HTTP tests (health, 404, CORS x6, rate limit x2)
 
 ---
 
@@ -166,6 +166,17 @@ THRESHOLDS (Default)
 | Response Time | >500ms | >2000ms |
 | CPU | >70% | >90% |
 | Memory | >80% | >95% |
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8024)
+RATE_LIMITS:
+- General: 100 requests/minute
+- Health Check: 30 requests/minute
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7)
+AUDIT: Linus audit completed 2026-01-08 (Instance 8)
 
 ---
 

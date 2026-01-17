@@ -1,13 +1,13 @@
 SERVER: synapse-relay
 VERSION: 1.0.0
-UPDATED: 2026-01-02
-STATUS: Tested (23 tests passed)
+UPDATED: 2026-01-08
+STATUS: Tested (10 HTTP tests passed)
 PORT: 3025 (UDP/InterLock), 8025 (HTTP), 9025 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
-DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk
+DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk, cors, express-rate-limit
 PURPOSE: InterLock mesh signal routing - the "switchboard operator" for neural packet routing
 CONFIG: /repo/synapse-relay/config/interlock.json
-TESTS: 23 (relay, rules, stats, buffer, HTTP, WebSocket, InterLock)
+TESTS: 10 HTTP tests (health, 404, CORS x6, rate limit x2)
 
 ---
 
@@ -151,6 +151,17 @@ TIMING
 | Max retries | 3 |
 | Stats aggregation | hourly |
 | Buffer processor | every 5 seconds |
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8025)
+RATE_LIMITS:
+- General: 100 requests/minute
+- Relay: 50 requests/minute
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7)
+AUDIT: Linus audit completed 2026-01-08 (Instance 8)
 
 ---
 

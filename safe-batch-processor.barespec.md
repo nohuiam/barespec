@@ -1,13 +1,13 @@
 SERVER: safe-batch-processor
 VERSION: 1.0.0
-UPDATED: 2026-01-02
-STATUS: Tested (29 tests passed)
+UPDATED: 2026-01-08
+STATUS: Tested (10 HTTP tests passed)
 PORT: 3022 (UDP/InterLock), 8022 (HTTP), 9022 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
-DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk
+DEPS: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk, cors, express-rate-limit
 PURPOSE: Safe batch file operations with validation, backup, and rollback capability
 CONFIG: /repo/safe-batch-processor/config/interlock.json
-TESTS: 29 (protected paths, batch limits, HTTP, execution, rollback, errors, websocket)
+TESTS: 10 HTTP tests (health, 404, CORS x6, rate limit x2)
 
 ---
 
@@ -140,6 +140,17 @@ BACKUPS: data/backups/
 CONFIG: config/interlock.json
 
 DEPENDENCIES: better-sqlite3, express, ws, uuid, zod, @modelcontextprotocol/sdk
+
+---
+
+SECURITY
+
+CORS: Origin whitelist (localhost:5173, 127.0.0.1:5173, localhost:3099, localhost:8022)
+RATE_LIMITS:
+- General: 100 requests/minute
+- Batch/Rollback: 20 requests/minute (conservative for file ops)
+HEADERS: RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset (draft-7)
+AUDIT: Linus audit completed 2026-01-08 (Instance 8)
 
 ---
 

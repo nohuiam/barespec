@@ -2,7 +2,8 @@
 
 ## Server Identity
 - **Name:** skill-builder
-- **Version:** 1.0.0
+- **Version:** 1.1.0
+- **Updated:** 2026-01-16
 - **Port Pattern:** 3029 (UDP) / 8029 (HTTP) / 9029 (WebSocket)
 - **Path:** `/repo/skill-builder/`
 
@@ -377,6 +378,8 @@ CREATE INDEX idx_skill_versions_skill ON skill_versions(skill_id);
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Server health with stats |
+| GET | `/api/tools` | List all MCP tools (Gateway integration) |
+| POST | `/api/tools/:toolName` | Execute MCP tool (Gateway integration) |
 | GET | `/api/stats` | Skills/usages summary |
 | GET | `/api/skills` | List skills (Layer 1 metadata) |
 | POST | `/api/skills` | Create skill |

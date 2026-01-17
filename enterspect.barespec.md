@@ -1,6 +1,6 @@
 SERVER: enterspect
 VERSION: 2.0
-UPDATED: 2025-12-26
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3009 (UDP/InterLock), 8009 (HTTP), 9009 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -90,6 +90,8 @@ HTTP REST API (Port 8009)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | /health | Server health check |
+| GET | /api/tools | List all MCP tools (Gateway integration) |
+| POST | /api/tools/:toolName | Execute MCP tool (Gateway integration) |
 | GET | /stats | Index statistics (files, tokens, memory) |
 | POST | /search | Unified search endpoint |
 | GET | /search/results/:id | Retrieve cached search results |

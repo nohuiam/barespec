@@ -39,19 +39,61 @@ SKILL.MD STRUCTURE
 FRONTMATTER:
 ```yaml
 name: skill-name
-description: When to use, capabilities, triggers, boundaries
-license: (optional)
+description: When to use, capabilities, triggers, boundaries (20-500 chars)
+tags: [domain, operation-type]
+cognitive_integration:           # REQUIRED for all BOP skills
+  awareness: true                # Track with consciousness-mcp
+  ethics_check: true|optional    # Tenets evaluation (true for destructive ops)
+  verification: true|optional    # Verifier-mcp checking (true for factual outputs)
+  experience_record: true        # Always true - record all outcomes
+  learning: true|optional        # Pattern extraction
+triggers:
+  - "activation phrase 1"
+  - "activation phrase 2"
+signals:                         # InterLock signals used
+  - EXPERIENCE_RECORDED
+  - SKILL_USED
 ```
 
 BODY:
 - Overview
-- Prerequisites
+- Cognitive Hooks (Pre-Execution and Post-Execution tables)
+- Prerequisites (including cognitive servers)
 - Execution steps
-- Examples (concrete, correct usage)
-- Error handling
+- Phase 0: Track Awareness (curl command)
+- Record Experience (curl command)
+- Error handling (including cognitive failures)
 - Limitations
 
 NAMING: Lowercase with hyphens (e.g., pdf-editor, brand-guidelines)
+
+---
+
+COGNITIVE INTEGRATION (BOP/Imminence OS Requirement)
+
+PURPOSE: All skills learn from execution, evaluate ethics, and verify outputs
+
+7-STEP LOOP:
+1. AWARENESS - consciousness-mcp POST /api/attention
+2. PLANNING - skill-builder POST /api/match (when ambiguous)
+3. ETHICS - tenets-server POST /api/evaluate (when destructive)
+4. EXECUTION - Core skill operations
+5. VERIFY - verifier-mcp POST /api/claims/verify (when factual)
+6. RECORD - experience-layer POST /api/experience (always)
+7. LEARN - experience-layer POST /api/lessons/learn (when patterns)
+
+REQUIRED_SERVERS:
+- consciousness-mcp (port 8028) - awareness tracking
+- experience-layer (port 8031) - experience recording
+- Optional: tenets-server (8027), verifier-mcp (8021), skill-builder (8029)
+
+VALIDATION:
+- skill-builder validates cognitive_integration on skill creation
+- experience_record: true is MANDATORY
+- Ethics check REQUIRED for destructive operations (DELETE, MERGE, MOVE)
+- Verification RECOMMENDED for factual outputs
+
+REFERENCE: /repo/claude-skills/cognitive-workflow-template/SKILL.md
 
 ---
 

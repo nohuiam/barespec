@@ -1,8 +1,8 @@
 LIBRARY: Server Tool Calls
-VERSION: 1.2
-UPDATED: 2026-01-05
+VERSION: 1.3
+UPDATED: 2026-01-07
 SERVERS: 32
-TOOLS: 421 total
+TOOLS: 427 total
 PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and usage
 
 ---
@@ -14,7 +14,7 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 | context-guardian | 14 | Safety | Validation, rules, mistake tracking |
 | quartermaster | 23 | Files | Search, inventory, monitoring |
 | snapshot | 6 | Backup | Capture, verify, restore |
-| catasorter | 6 | Classification | GLEC classify, organize |
+| catasorter | 12 | Classification | GLEC classify, web classify, organize |
 | looker | 5 | Research | Web search, credibility |
 | smart-file-organizer | 3 | Files | Organize, rollback |
 | bonzai-bloat-buster | 6 | Dedup | Compare, consolidate |
@@ -116,9 +116,12 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 
 ---
 
-## CATASORTER (6 tools)
+## CATASORTER (12 tools)
 
-**Purpose:** GLEC classification, document organization
+**Purpose:** GLEC classification, web classification, document organization
+**v2.1:** Rate limiting (token bucket + circuit breaker), parallel batch processing
+
+### File Classification (6 tools)
 
 | Tool | Purpose | Key Input |
 |------|---------|-----------|
@@ -127,7 +130,18 @@ PURPOSE: Complete reference of all MCP server tools with inputs, outputs, and us
 | `get_dewey_stats` | Dewey counters | (none) |
 | `get_workflow_metrics` | Workflow stats | include_details |
 | `organize_document` | Classify + move | file_path, user_hint, dry_run |
-| `batch_process` | Batch classify | max_files, dry_run, extract_nuggets |
+| `batch_process` | Batch classify | max_files, dry_run, extract_nuggets, parallel_limit |
+
+### Web Classification (6 tools)
+
+| Tool | Purpose | Key Input |
+|------|---------|-----------|
+| `classify_url` | Classify URL + extract nuggets | url, extract_nuggets, mode (bop/niws/default) |
+| `get_web_classification` | Get existing URL classification | url |
+| `get_domain_info` | Domain-level analysis | domain |
+| `get_web_stats` | Web classification stats | (none) |
+| `batch_classify_urls` | Batch URL classification | urls[], extract_nuggets, mode |
+| `discover_urls` | Extract URLs from source | source, max_urls |
 
 ---
 

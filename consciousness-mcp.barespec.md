@@ -1,6 +1,6 @@
 SERVER: consciousness-mcp
-VERSION: 1.0.0
-UPDATED: 2026-01-03
+VERSION: 1.1.0
+UPDATED: 2026-01-16
 STATUS: Tested (88 tests passed)
 PORT: 3028 (UDP/InterLock), 8028 (HTTP), 9028 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -96,6 +96,8 @@ LAYERS
 HTTP REST API
 
 GET  /health                    → { status, uptime, version }
+GET  /api/tools                 → { tools: [], count: number } (Gateway integration)
+POST /api/tools/:toolName       → { success: boolean, result: object } (Gateway integration)
 GET  /api/awareness             → Current ecosystem awareness snapshot
 GET  /api/attention             → Recent attention events
 GET  /api/attention/hotspots    → Attention hotspot patterns
@@ -124,6 +126,11 @@ C↔S ping/pong                  → Keepalive
 ---
 
 INTERLOCK SIGNALS
+
+PROTOCOL: Dual-protocol support (added Jan 4, 2026)
+- Binary (BaNano): 12-byte header (signalType uint16, version uint16, payloadLength uint32, timestamp uint32) + JSON payload
+- Text Format A: {t, s, d, ts} - used by consolidation-engine, intake-guardian, safe-batch-processor
+- Text Format B: {type, source, payload, timestamp, nonce} - used by filesystem-guardian
 
 Listens to ALL signals from all 26 servers:
 - FILE_DISCOVERED, FILE_INDEXED (EntroSpect, smart-file-organizer)

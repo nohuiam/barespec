@@ -1,9 +1,10 @@
 # Tenets Server Barespec
 
 **Server:** tenets-server
-**Version:** 1.0.0
+**Version:** 1.1.0
+**Updated:** 2026-01-06
 **Port Assignment:** MCP stdio | UDP 3027 | HTTP 8027 | WS 9027
-**Purpose:** Ethical decision evaluation against 25 Gospel tenets
+**Purpose:** Ethical decision evaluation against 25 Gospel tenets with Evil opposites for spectrum scoring
 
 ---
 
@@ -51,6 +52,42 @@ Tenets Server evaluates decisions/actions against 25 ethical principles derived 
 - character (8): TRUTH, HUMILITY, FAITH, HOPE, WISDOM, RIGHTEOUSNESS, FAITHFULNESS, JOY
 - community (5): PEACE, UNITY, GENEROSITY, FELLOWSHIP, DISCIPLESHIP
 - restoration (6): FORGIVENESS, MERCY, GRACE, REDEMPTION, REPENTANCE, DIGNITY
+
+---
+
+## The 25 Tenets of Evil (Opposites)
+
+Used by NIWS Christ-Oh-Meter for moral spectrum scoring: -1.0 (Evil) to +1.0 (Christ)
+
+| ID | Evil Tenet | Opposite Of | Definition |
+|----|------------|-------------|------------|
+| 1 | HATRED | LOVE | Seeks harm/destruction of others |
+| 2 | WOUNDING | HEALING | Creates damage, breaks what's whole |
+| 3 | CRUELTY | COMPASSION | Delights in suffering |
+| 4 | VENGEANCE | FORGIVENESS | Perpetuates cycles of retaliation |
+| 5 | STRIFE | PEACE | Sows discord, creates conflict |
+| 6 | RUTHLESSNESS | MERCY | Shows no relief, maximizes burdens |
+| 7 | OPPRESSION | JUSTICE | Exploits vulnerable, protects powerful |
+| 8 | EXPLOITATION | SERVICE | Uses power to extract from others |
+| 9 | DECEPTION | TRUTH | Lies, misleads, obscures |
+| 10 | PRIDE | HUMILITY | Exalts self, claims unearned credit |
+| 11 | DESPAIR | FAITH | Abandons hope, spreads hopelessness |
+| 12 | NIHILISM | HOPE | Denies meaning, discourages action |
+| 13 | GREED | SACRIFICE | Takes for self at others' expense |
+| 14 | DIVISION | UNITY | Tears apart, creates factions |
+| 15 | HOARDING | GENEROSITY | Withholds from those in need |
+| 16 | FOOLISHNESS | WISDOM | Rejects discernment, follows tribalism |
+| 17 | CONDEMNATION | GRACE | Demands performance before acceptance |
+| 18 | CORRUPTION | RIGHTEOUSNESS | Enables/participates in moral decay |
+| 19 | ISOLATION | FELLOWSHIP | Excludes, creates loneliness |
+| 20 | STUNTING | DISCIPLESHIP | Prevents growth, creates dependency |
+| 21 | OBSTINACY | REPENTANCE | Refuses to acknowledge wrong |
+| 22 | ABANDONMENT | REDEMPTION | Denies second chances |
+| 23 | BETRAYAL | FAITHFULNESS | Breaks commitments when convenient |
+| 24 | MISERY | JOY | Spreads despair, crushes gladness |
+| 25 | DEGRADATION | DIGNITY | Strips worth from persons |
+
+**Source File:** src/tenets/evilTenets.ts
 
 ---
 
@@ -362,6 +399,9 @@ tenets-server/
 │   ├── database/
 │   │   ├── schema.ts
 │   │   └── seed.ts
+│   ├── tenets/
+│   │   ├── index.ts
+│   │   └── evilTenets.ts      # 25 Tenets of Evil (opposites)
 │   ├── tools/
 │   │   ├── index.ts
 │   │   └── [8 tool files]

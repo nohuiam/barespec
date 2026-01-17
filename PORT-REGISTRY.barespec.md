@@ -1,6 +1,6 @@
 REGISTRY: BOP Servers Port Allocation
-VERSION: 2.4
-UPDATED: 2026-01-09
+VERSION: 2.5
+UPDATED: 2026-01-14
 AUDITED: Source code audit (not documentation)
 
 ---
@@ -23,9 +23,9 @@ PATTERN: Server N uses 300N, 800N, 900N
 | context-guardian | 3001 | 8001 | 9001 | Production | Redis 6379 |
 | quartermaster | 3002 | 8002 | 9002 | Production | Redis 6379 |
 | snapshot | 3003 | 8003 | 9003 | Production | - |
-| tool-registry | 3004 | 8004 | 9004 | Production | - |
+| toolee | 3004 | 8004 | 9004 | Production | - |
 | catasorter | 3005 | 8005 | 9005 | Production | - |
-| looker | - | 8006 | - | Production | - |
+| looker-mcp | - | 8006 | - | Production | - |
 | smart-file-organizer | 3007 | 8007 | 9007 | Production | Redis 6379 |
 | bonzai-bloat-buster | 3008 | 8008 | 9008 | Production | Qdrant 6333 |
 | enterspect | 3009 | 8009 | 9009 | Production | - |
@@ -57,6 +57,7 @@ PATTERN: Server N uses 300N, 800N, 900N
 | experience-layer | 3031 | 8031 | 9031 | Production | SQLite |
 | consolidation-engine | 3032 | 8032 | 9032 | Production | SQLite |
 | linus-inspector | 3037 | 8037 | 9037 | Production | SQLite |
+| bop-gateway | - | 8038 | - | Production | - |
 | filesystem | - | - | - | 3rd party | 3rd party npm |
 
 ---
@@ -98,7 +99,7 @@ UDP: 3005 - InterLock mesh
 HTTP: 8005 - Stats, Dewey counters
 WS: 9005 - Batch progress events
 
-### looker (8006)
+### looker-mcp (8006)
 SOURCE: /repo/looker-mcp/src/index.ts:667
 UDP: None
 HTTP: 8006 - Credibility API, search API
@@ -291,6 +292,16 @@ TOOLS: 26 (inspection suite + self-inspection)
 CATEGORY: Quality Gate
 PURPOSE: Brutal quality gate for neurogenesis-generated servers. "Physician heal thyself."
 
+### bop-gateway (8038)
+SOURCE: /repo/bop-gateway/src/http/server.ts
+UDP: None (no mesh coordination)
+HTTP: 8038 - Gateway REST API, server proxy
+WS: None
+DEPS: None (stateless proxy)
+TOOLS: 5 (gateway_discover, gateway_call, gateway_health, gateway_tools, gateway_mcp)
+CATEGORY: Infrastructure
+PURPOSE: Single MCP entry point to entire 36-server ecosystem. Token savings: ~150k → ~3k.
+
 ### filesystem (stdio only)
 SOURCE: npm @modelcontextprotocol/server-filesystem
 UDP: None
@@ -318,11 +329,11 @@ PURPOSE: Server discovery, heartbeat, coordination
 HEARTBEAT: Every 30 seconds
 TIMEOUT: 90 seconds (3x heartbeat)
 
-ACTIVE MESH PARTICIPANTS (29):
+ACTIVE MESH PARTICIPANTS (32):
 - context-guardian (3001)
 - quartermaster (3002)
 - snapshot (3003)
-- tool-registry (3004)
+- toolee (3004)
 - catasorter (3005)
 - smart-file-organizer (3007)
 - bonzai-bloat-buster (3008)
@@ -353,10 +364,11 @@ ACTIVE MESH PARTICIPANTS (29):
 - linus-inspector (3037)
 
 HTTP-ONLY SERVERS:
-- looker (8006)
+- looker-mcp (8006)
 - chronos-synapse (8011)
 - niws-server (8015) - DEPRECATED
 - research-bus (8019)
+- bop-gateway (8038)
 
 3RD PARTY (Cannot modify):
 - filesystem (npm package)
@@ -369,4 +381,4 @@ HTTP-ONLY SERVERS:
 2. UDP/HTTP/WS ports are for InterLock mesh and REST APIs, not MCP
 3. "Production" means connected to Claude Desktop config
 4. Port assignments verified from source code, not documentation
-5. Toolee (3004) exists but not registered in Claude Desktop
+5. toolee (3004) exists but not registered in Claude Desktop

@@ -1,6 +1,6 @@
 SERVER: snapshot
 VERSION: 1.0
-UPDATED: 2025-12-26
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3003 (UDP/InterLock), 8003 (HTTP), 9003 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -86,6 +86,19 @@ SAFETY
 - Requires confirmation for restore
 - Auto-backup before restore
 - Graceful shutdown handlers
+
+---
+
+HTTP REST API (Port 8003)
+
+GET  /health                    → { status, server, version, uptime, timestamp }
+GET  /api/tools                 → { tools: [], count: number } (Gateway integration)
+POST /api/tools/:toolName       → { success: boolean, result: object } (Gateway integration)
+GET  /snapshots                 → List snapshots
+GET  /snapshots/:id             → Get snapshot details
+POST /snapshots                 → Create new snapshot
+POST /snapshots/:id/verify      → Verify snapshot integrity
+POST /snapshots/:id/restore     → Restore from snapshot
 
 ---
 

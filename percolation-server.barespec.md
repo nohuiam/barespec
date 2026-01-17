@@ -2,7 +2,8 @@
 
 ## Server Identity
 - **Name:** percolation-server
-- **Version:** 1.0.0
+- **Version:** 1.1.0
+- **Updated:** 2026-01-16
 - **Port Pattern:** 3030 (UDP) / 8030 (HTTP) / 9030 (WebSocket)
 - **Path:** `/repo/percolation-server/`
 - **GitHub:** https://github.com/nohuiam/percolation-server
@@ -371,6 +372,8 @@ CREATE INDEX idx_logs_action ON percolation_logs(action);
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Server health with active percolations |
+| GET | `/api/tools` | List all MCP tools (Gateway integration) |
+| POST | `/api/tools/:toolName` | Execute MCP tool (Gateway integration) |
 | GET | `/api/stats` | Percolation statistics |
 | POST | `/api/blueprints` | Submit blueprint for percolation |
 | GET | `/api/blueprints` | List all blueprints |
