@@ -1,6 +1,6 @@
 SERVER: intelligent-router
-VERSION: 1.0.0
-UPDATED: 2026-01-07
+VERSION: 1.1.0
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3020 (UDP/InterLock), 8020 (HTTP), 9020 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -87,6 +87,15 @@ USE: Route a request via HTTP
 ENDPOINT: POST /api/v1/cleanup
 OUTPUT: { success: boolean, message: string, timestamp: string }
 USE: Trigger database cleanup
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } OR tool arguments directly
+OUTPUT: { success: boolean, result: object }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 

@@ -1,6 +1,6 @@
 SERVER: intake-guardian
-VERSION: 1.0.0
-UPDATED: 2026-01-02
+VERSION: 1.1.0
+UPDATED: 2026-01-16
 STATUS: Tested (27 tests passed)
 PORT: 3023 (UDP/InterLock), 8023 (HTTP), 9023 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -86,6 +86,8 @@ POST /api/admit             → { admitted, admission_id }
 GET  /api/history           → { entries[], total }
 GET  /api/config            → { thresholds }
 PUT  /api/config            → { thresholds, updated }
+GET  /api/tools             → List all MCP tools (bop-gateway)
+POST /api/tools/:toolName   → Execute MCP tool via HTTP (bop-gateway)
 
 ---
 

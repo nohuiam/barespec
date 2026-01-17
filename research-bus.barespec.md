@@ -1,6 +1,6 @@
 SERVER: research-bus
-VERSION: 1.0
-UPDATED: 2025-12-27
+VERSION: 1.1
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 8019 (HTTP only)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -106,6 +106,8 @@ HTTP API (port 8019)
 | /api/synthesize | POST | Synthesize texts with Claude |
 | /api/stats | GET | Combined stats (vault, cache, budget) |
 | /api/history | GET | Recent research history |
+| /api/tools | GET | List all MCP tools (bop-gateway) |
+| /api/tools/:toolName | POST | Execute MCP tool via HTTP (bop-gateway) |
 
 RESEARCH_QUERY_PARAMS:
 - query: Search query (required)

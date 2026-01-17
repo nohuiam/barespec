@@ -1,6 +1,6 @@
 SERVER: filesystem-guardian
-VERSION: 1.0.0
-UPDATED: 2026-01-02
+VERSION: 1.1.0
+UPDATED: 2026-01-16
 STATUS: Tested (6 tests passed)
 PORT: 3026 (UDP/InterLock), 8026 (HTTP), 9026 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -86,6 +86,8 @@ POST /api/spotlight/search  → Query Spotlight
 POST /api/spotlight/reindex → Trigger reindex
 POST /api/watch/start       → Start a watch
 POST /api/watch/stop        → Stop a watch
+GET  /api/tools             → List all MCP tools (bop-gateway)
+POST /api/tools/:toolName   → Execute MCP tool via HTTP (bop-gateway)
 
 ---
 

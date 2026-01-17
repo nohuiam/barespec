@@ -1,6 +1,6 @@
 SERVER: pk-manager
-VERSION: 1.3
-UPDATED: 2025-12-30
+VERSION: 1.4
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3018 (UDP/InterLock), 8018 (HTTP), 9018 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -42,6 +42,15 @@ ENDPOINT: GET /api/v1/backups
 PARAMS: ?rebuildId=xxx OR ?latest=true
 OUTPUT: { success: boolean, count: number, backups: array } OR { success: boolean, backup: object|null }
 USE: List backups for rebuild or get latest backup
+
+ENDPOINT: GET /api/tools
+OUTPUT: { tools: [{ name, description, inputSchema }], count: number }
+USE: List all MCP tools for bop-gateway integration
+
+ENDPOINT: POST /api/tools/:toolName
+INPUT: { arguments: object } OR tool arguments directly
+OUTPUT: { success: boolean, result: object }
+USE: Execute MCP tool via HTTP for bop-gateway integration
 
 ---
 

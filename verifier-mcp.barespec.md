@@ -1,6 +1,6 @@
 SERVER: verifier-mcp
-VERSION: 1.1
-UPDATED: 2025-12-29
+VERSION: 1.2
+UPDATED: 2026-01-16
 STATUS: Production
 PORT: 3021 (UDP/InterLock), 8021 (HTTP), 9021 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -85,6 +85,8 @@ POST /api/v1/claims/extract      → extract_claims via HTTP
 POST /api/v1/claims/verify       → verify_claims via HTTP
 GET  /api/v1/sources             → list_sources via HTTP
 GET  /api/v1/sources/:domain     → list_sources filtered by domain
+GET  /api/tools                  → List all MCP tools (bop-gateway)
+POST /api/tools/:toolName        → Execute MCP tool via HTTP (bop-gateway)
 
 ---
 
