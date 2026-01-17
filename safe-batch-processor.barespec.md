@@ -1,6 +1,6 @@
 SERVER: safe-batch-processor
-VERSION: 1.0.0
-UPDATED: 2026-01-08
+VERSION: 1.1.0
+UPDATED: 2026-01-17
 STATUS: Tested (10 HTTP tests passed)
 PORT: 3022 (UDP/InterLock), 8022 (HTTP), 9022 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -80,13 +80,19 @@ LAYERS
 
 HTTP REST API
 
-GET  /health               → { status, active_batches, backup_count }
-POST /api/batch            → { batch_id, success_count, failure_count, ... }
-POST /api/validate         → { valid, issues }
-POST /api/rollback         → { success, restored, failed }
-GET  /api/batches          → { batches[], total }
-GET  /api/batches/:id      → { batch details }
-GET  /api/batches/:id/items → { items[], progress }
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/tools | List all MCP tools (Gateway integration) |
+| POST | /api/tools/:toolName | Execute MCP tool (Gateway integration) |
+| GET | /health | Server health status |
+| POST | /api/batch | Execute batch operation |
+| POST | /api/validate | Validate batch before execution |
+| POST | /api/rollback | Rollback batch operation |
+| GET | /api/batches | List batch operations |
+| GET | /api/batches/:id | Get batch details |
+| GET | /api/batches/:id/items | Get batch item details |
+
+Rate Limited: 100 requests/minute (general), 20/minute (batch/rollback)
 
 ---
 

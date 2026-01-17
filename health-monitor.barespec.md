@@ -1,6 +1,6 @@
 SERVER: health-monitor
-VERSION: 1.0.0
-UPDATED: 2026-01-08
+VERSION: 1.1.0
+UPDATED: 2026-01-17
 STATUS: Tested (10 HTTP tests passed)
 PORT: 3024 (UDP/InterLock), 8024 (HTTP), 9024 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -78,16 +78,22 @@ LAYERS
 
 HTTP REST API
 
-GET  /health                    → { status, scheduler_active, stats }
-GET  /api/health                → All 22 servers status
-GET  /api/servers/:name         → Individual server status
-GET  /api/servers/:name/history → Server health history
-GET  /api/alerts                → All alerts
-GET  /api/alerts/active         → Active alerts count
-POST /api/alerts/:id/ack        → Acknowledge alert
-GET  /api/metrics               → Metrics for all servers
-GET  /api/predictions           → Predictive failure alerts
-GET  /api/summary               → Ecosystem summary
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/tools | List all MCP tools (Gateway integration) |
+| POST | /api/tools/:toolName | Execute MCP tool (Gateway integration) |
+| GET | /health | Server health status |
+| GET | /api/health | All 22 servers status |
+| GET | /api/servers/:name | Individual server status |
+| GET | /api/servers/:name/history | Server health history |
+| GET | /api/alerts | All alerts |
+| GET | /api/alerts/active | Active alerts count |
+| POST | /api/alerts/:id/ack | Acknowledge alert |
+| GET | /api/metrics | Metrics for all servers |
+| GET | /api/predictions | Predictive failure alerts |
+| GET | /api/summary | Ecosystem summary |
+
+Rate Limited: 100 requests/minute (general), 30/minute (health checks)
 
 ---
 

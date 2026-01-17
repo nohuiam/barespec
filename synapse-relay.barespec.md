@@ -1,6 +1,6 @@
 SERVER: synapse-relay
-VERSION: 1.0.0
-UPDATED: 2026-01-08
+VERSION: 1.1.0
+UPDATED: 2026-01-17
 STATUS: Tested (10 HTTP tests passed)
 PORT: 3025 (UDP/InterLock), 8025 (HTTP), 9025 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -63,18 +63,24 @@ LAYERS
 
 HTTP REST API
 
-GET  /health                → { status, active_relays, buffer_count }
-POST /api/relay             → Relay single signal
-POST /api/relay/multicast   → Relay to multiple targets
-GET  /api/relay/:id         → Get relay details
-POST /api/rules             → Create relay rule
-GET  /api/rules             → List relay rules
-PUT  /api/rules/:id         → Update relay rule
-DELETE /api/rules/:id       → Delete relay rule
-GET  /api/stats             → Get relay statistics
-GET  /api/buffer            → List buffered signals
-POST /api/buffer/retry      → Retry buffered signals
-POST /api/buffer/flush      → Flush buffer to targets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/tools | List all MCP tools (Gateway integration) |
+| POST | /api/tools/:toolName | Execute MCP tool (Gateway integration) |
+| GET | /health | Server health status |
+| POST | /api/relay | Relay single signal |
+| POST | /api/relay/multicast | Relay to multiple targets |
+| GET | /api/relay/:id | Get relay details |
+| POST | /api/rules | Create relay rule |
+| GET | /api/rules | List relay rules |
+| PUT | /api/rules/:id | Update relay rule |
+| DELETE | /api/rules/:id | Delete relay rule |
+| GET | /api/stats | Get relay statistics |
+| GET | /api/buffer | List buffered signals |
+| POST | /api/buffer/retry | Retry buffered signals |
+| POST | /api/buffer/flush | Flush buffer to targets |
+
+Rate Limited: 100 requests/minute (general), 50/minute (relay)
 
 ---
 

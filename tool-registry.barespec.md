@@ -1,6 +1,6 @@
 SERVER: tool-registry
-VERSION: 2.0
-UPDATED: 2025-12-26
+VERSION: 2.1
+UPDATED: 2026-01-17
 STATUS: Production
 PORT: 3004 (UDP/InterLock), 8004 (HTTP), 9004 (WebSocket)
 MCP: stdio transport (stdin/stdout JSON-RPC)
@@ -455,6 +455,41 @@ LAYERS
 2. InterLock UDP mesh (port 3004) - Peer communication
 3. HTTP REST API (port 8004) - External integrations
 4. WebSocket real-time (port 9004) - Live updates
+
+---
+
+HTTP REST API (Port 8004)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/tools | List all MCP tools (Gateway integration) |
+| POST | /api/tools/:toolName | Execute MCP tool (Gateway integration) |
+| GET | /health | Server health check |
+| GET | /metrics | Prometheus-style metrics |
+| GET | /api/v1/tools | List registered tools |
+| POST | /api/v1/tools | Register a tool |
+| GET | /api/v1/tools/:toolName | Get tool details |
+| PUT | /api/v1/tools/:toolName | Update tool |
+| DELETE | /api/v1/tools/:toolName | Delete tool |
+| GET | /api/v1/tools/:toolName/stats | Tool statistics |
+| POST | /api/v1/tools/search | Search tools (PLANNED - not yet implemented) |
+| GET | /api/v1/servers | List ecosystem servers |
+| GET | /api/v1/servers/:serverId | Get server details |
+| GET | /api/v1/analytics/popular | Popular tools |
+| GET | /api/v1/analytics/trends/:toolName | Usage trends |
+| GET | /api/v1/recommendations | Get recommendations |
+| POST | /api/v1/curation/flag | Flag a tool |
+| POST | /api/v1/ratings | Submit rating |
+| GET | /api/v1/approvals/pending | Pending approvals |
+| POST | /api/v1/approvals/:requestId/approve | Approve request |
+| POST | /api/v1/approvals/:requestId/deny | Deny request |
+| GET | /api/v1/status/dashboard | Status dashboard |
+| GET | /api/v1/status/health | Health check |
+| GET | /api/v1/claude-desktop/capabilities | Claude capabilities |
+| GET | /api/v1/claude-desktop/updates | Claude updates |
+| GET | /api/v1/claude-desktop/reminder | Capability reminder |
+
+Rate Limited: 100 requests/minute (general), 20/minute (mutations)
 
 ---
 
